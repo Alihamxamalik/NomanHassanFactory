@@ -7,6 +7,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import model.RawMaterial;
@@ -16,103 +17,87 @@ import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class GatePassController implements Initializable {
+
     @FXML
-    Button btnClose;
+    ChoiceBox<RawMaterial> itemChoice;
     @FXML
-    ListView materialListView;
+    ChoiceBox<RawMaterial> partyChoice;
     @FXML
-    Button btnAdd;
+    TextField weightEditText;
     @FXML
-    TextField txtMaterial;
-    RawMaterialDAO instance;
+    TextField bardanaEditText;
+    @FXML
+    TextField priceEditText;
+    @FXML
+    DatePicker entryDatePicker;
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        instance = RawMaterialDAO.getInstance();
-        showAllProduct();
     }
 
-    void showAllProduct() {
-        materialListView.setItems(instance.GetAll());
+    int itemCount = 0;
 
+    @FXML
+    public void AddButton() {
 
-        materialListView.setCellFactory(new Callback<ListView<RawMaterial>, ListCell<RawMaterial>>() {
-            @Override
-            public ListCell<RawMaterial> call(ListView<RawMaterial> param) {
-
-                ListCell<RawMaterial> cell = new ListCell<RawMaterial>() {
-                    @Override
-                    protected void updateItem(RawMaterial material, boolean empty) {
-                        super.updateItem(material, empty);
-
-                        if (!empty) {
-                            HBox box = new HBox(20);
-                            Label lblName = new Label(material.getName());
-                            Button btn = new Button("x");
-                            Button btnShowStock = new Button("Show Stock");
-                            btn.setOnAction(new EventHandler<ActionEvent>() {
-                                @Override
-                                public void handle(ActionEvent event) {
-                                     confirmDelete(material);
-                                }
-                            });
-                            btnShowStock.setOnAction(new EventHandler<ActionEvent>() {
-                                @Override
-                                public void handle(ActionEvent event) {
-                                    showStockScreen();
-                                }
-                            });
-
-                            box.getChildren().addAll(btn,btnShowStock,lblName );
-                            setGraphic(box);
-                            //setText(value);
-                        } else
-                            setGraphic(null);
-                    }
-                };
-                return cell;
-            }
-        });
-
-
-    }
-
-    void showStockScreen(){
-
-
-
-    }
-
-    void confirmDelete(RawMaterial material){
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Are you sure?");
-        alert.setHeaderText("Do you want to delete item "+material.getName());
-
-        Optional<ButtonType> result = alert.showAndWait();
-        if (result.get() == ButtonType.OK){
-            // ... user chose OK
-            instance.delete(material);
-        } else {
-            // ... user chose CANCEL or closed the dialog
+        if (itemChoice.getValue().getId() == 0) {
+            ShowAlert("Please Select Item");
+            return;
         }
+        String weightText = weightEditText.getText();
+        double weight = StringToDouble(weightText);
 
+        if (weight <= 0) {
+            ShowAlert("Wrong Weight Input");
+            return;
+        }
+        AddItem();
 
     }
 
     @FXML
-    void insertMaterial() {
-        String materialName = txtMaterial.getText().toString();
-        if(!materialName.equals("")){
-            RawMaterial material = new RawMaterial(txtMaterial.getText().toString());
-            instance.insert(material);
-            txtMaterial.clear();
+    public void SaveGatePass() {
+
+        if(itemCount<1) {
+            ShowAlert("Please Add Item First");
+            return;
         }
+
+        ShowAlert("Item Added");
+
+        itemCount = 0;
     }
 
 
     @FXML
     private void closeWindow() {
-        Stage stage = (Stage) btnClose.getScene().getWindow();
+        Stage stage = (Stage) itemChoice.getScene().getWindow();
         // do what you have to do
         stage.close();
     }
+
+    double StringToDouble(String s) {
+        double value = 0;
+        try {
+            value = Double.parseDouble((s));
+        } catch (Exception e) {
+            value = 0;
+        }
+        return value;
+    }
+
+
+    void AddItem() {
+
+        itemCount++;
+
+    }
+
+    public  void ShowAlert(String s){
+        Alert alert = new Alert(Alert.AlertType.INFORMATION, s, ButtonType.OK);
+        alert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
+        alert.show();
+
+    }
+
 }

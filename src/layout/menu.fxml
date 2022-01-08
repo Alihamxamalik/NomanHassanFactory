@@ -13,6 +13,7 @@
       </Label>
       <Button layoutX="15" layoutY="150.0" mnemonicParsing="false" onMouseClicked="#OpenRawMaterialMenu" prefHeight="40.0" prefWidth="200.0" text="Raw Material" />
       <Button layoutX="15" layoutY="220.0" mnemonicParsing="false" onMouseClicked="#OpenPartyMenu" prefHeight="40.0" prefWidth="200.0" text="Parties" />
+      <Button layoutX="15.0" layoutY="288.0" mnemonicParsing="false" onMouseClicked="#OpenGatePassScreen" prefHeight="47.0" prefWidth="200.0" text="Gate Pass" />
 <!--      <Button fx:id="productButton" layoutX="15.0" layoutY="443.0" mnemonicParsing="false" onMouseClicked="#OpenProductMenu" prefHeight="40.0" prefWidth="200.0" text="Product" />-->
 <!--      <Button layoutX="15" layoutY="225.0" mnemonicParsing="false" onMouseClicked="#OpenWorkerMenu" prefHeight="40.0" prefWidth="200.0" text="Worker" />-->
 <!--      <Button layoutX="15" layoutY="300.0" mnemonicParsing="false" onMouseClicked="#OpenRecipeMenu" prefHeight="40.0" prefWidth="200.0" text="Recipe (Mael)" />-->

@@ -69,6 +69,21 @@ public class MenuController implements Initializable {
         }
     }
     @FXML
+    void OpenGatePassScreen(){
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("../layout/gate_pass_entry_layout.fxml"));
+            Parent root1 = (Parent) fxmlLoader.load();
+            Stage stage = new Stage();
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.initStyle(StageStyle.UNDECORATED);
+            stage.setTitle("Gate Pass");
+            stage.setScene(new Scene(root1));
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    @FXML
     void OpenWorkerMenu(){
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("../layout/worker_layout.fxml"));
