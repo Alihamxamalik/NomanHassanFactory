@@ -24,6 +24,8 @@ public class ItemController implements Initializable {
     Button btnAdd;
     @FXML
     TextField txtItem;
+    @FXML
+    CheckBox checkBoxAssembly;
     ItemDAO instance;
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -44,7 +46,11 @@ public class ItemController implements Initializable {
 
                         if (!empty) {
                             HBox box = new HBox(20);
-                            Label lblName = new Label(material.getName());
+                            String s = material.getName();
+                            if(material.isAssemble())
+                                s= s + " (Assembly Item)";
+
+                            Label lblName = new Label(s);
                             Button btn = new Button("x");
                             Button btnShowStock = new Button("Show Stock");
                             btn.setOnAction(new EventHandler<ActionEvent>() {
@@ -92,23 +98,21 @@ public class ItemController implements Initializable {
         } else {
             // ... user chose CANCEL or closed the dialog
         }
-
-
     }
 
     @FXML
     void insertMaterial() {
-        String materialName = txtItem.getText().toString();
+        String materialName = txtItem.getText();
         if(!materialName.equals("")){
 
             long id = ItemDAO.getInstance().getLastId()+1;
 
-            Item material = new Item(id, txtItem.getText().toString(),false);
+            Item material = new Item(id, txtItem.getText(), checkBoxAssembly.isSelected());
             instance.insert(material);
             txtItem.clear();
+            checkBoxAssembly.setSelected(false);
         }
     }
-
 
     @FXML
     private void closeWindow() {

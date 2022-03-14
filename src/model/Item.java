@@ -13,7 +13,11 @@ public class Item {
         return name;
     }
 
-    public Item(long id, String name,boolean assemble) {
+    public boolean isAssemble() {
+        return assemble;
+    }
+
+    public Item(long id, String name, boolean assemble) {
         this.id= id;
         this.name = name;
         this.assemble = assemble;
