@@ -40,7 +40,7 @@ public class MenuController implements Initializable {
     @FXML
     void OpenRawMaterialMenu(){
         try {
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("../layout/raw_material_layout.fxml"));
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("../layout/item_layout.fxml"));
             Parent root1 = (Parent) fxmlLoader.load();
             Stage stage = new Stage();
             stage.initModality(Modality.APPLICATION_MODAL);
@@ -56,7 +56,7 @@ public class MenuController implements Initializable {
     @FXML
     void OpenPartyMenu(){
         try {
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("../layout/party_layout.fxml"));
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("../layout/vendor_layout.fxml"));
             Parent root1 = (Parent) fxmlLoader.load();
             Stage stage = new Stage();
             stage.initModality(Modality.APPLICATION_MODAL);

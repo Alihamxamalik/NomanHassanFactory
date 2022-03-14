@@ -12,7 +12,7 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws Exception{
         Parent root = FXMLLoader.load(getClass().getResource("../layout/menu.fxml"));
         primaryStage.setTitle("Noman Hassan Metals");
-        primaryStage.setScene(new Scene(root, 1280, 720));
+        primaryStage.setScene(new Scene(root, 800, 600));
         primaryStage.show();
     }
 

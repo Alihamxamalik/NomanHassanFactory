@@ -2,7 +2,7 @@ package model;
 
 public class RawMaterialEntry {
 
-    private RawMaterial material;
+    private Item material;
     private double weight;
     private double priceInRupees;
     private double bardana;
@@ -11,11 +11,11 @@ public class RawMaterialEntry {
     public RawMaterialEntry(){
         finalWeight = weight-bardana;
     }
-    public RawMaterial getMaterial() {
+    public Item getMaterial() {
         return material;
     }
 
-    public void setMaterial(RawMaterial material) {
+    public void setMaterial(Item material) {
         this.material = material;
     }
 

@@ -4,16 +4,16 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.MenuController">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600" prefWidth="800" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.MenuController">
    <children>
-      <Label alignment="CENTER" prefHeight="40.0" prefWidth="1280.0" text="Noman Hassan Metals" textAlignment="JUSTIFY">
+      <Label alignment="CENTER" layoutX="27.0" layoutY="6.0" prefHeight="40.0" prefWidth="747.0" text="Noman Hassan Metals" textAlignment="JUSTIFY">
          <font>
             <Font name="System Bold" size="21.0" />
          </font>
       </Label>
-      <Button layoutX="15" layoutY="150.0" mnemonicParsing="false" onMouseClicked="#OpenRawMaterialMenu" prefHeight="40.0" prefWidth="200.0" text="Raw Material" />
-      <Button layoutX="15" layoutY="220.0" mnemonicParsing="false" onMouseClicked="#OpenPartyMenu" prefHeight="40.0" prefWidth="200.0" text="Parties" />
-      <Button layoutX="15.0" layoutY="288.0" mnemonicParsing="false" onMouseClicked="#OpenGatePassScreen" prefHeight="47.0" prefWidth="200.0" text="Gate Pass" />
+      <Button layoutX="27.0" layoutY="529.0" mnemonicParsing="false" onMouseClicked="#OpenRawMaterialMenu" prefHeight="40.0" prefWidth="200.0" text="Item Center" />
+      <Button layoutX="284.0" layoutY="529.0" mnemonicParsing="false" onMouseClicked="#OpenPartyMenu" prefHeight="40.0" prefWidth="200.0" text="Vendor Center" />
+      <Button layoutX="284.0" layoutY="116.0" mnemonicParsing="false" onMouseClicked="#OpenGatePassScreen" prefHeight="47.0" prefWidth="200.0" text="Gate Pass" />
 <!--      <Button fx:id="productButton" layoutX="15.0" layoutY="443.0" mnemonicParsing="false" onMouseClicked="#OpenProductMenu" prefHeight="40.0" prefWidth="200.0" text="Product" />-->
 <!--      <Button layoutX="15" layoutY="225.0" mnemonicParsing="false" onMouseClicked="#OpenWorkerMenu" prefHeight="40.0" prefWidth="200.0" text="Worker" />-->
 <!--      <Button layoutX="15" layoutY="300.0" mnemonicParsing="false" onMouseClicked="#OpenRecipeMenu" prefHeight="40.0" prefWidth="200.0" text="Recipe (Mael)" />-->

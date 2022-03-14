@@ -1,27 +1,25 @@
 package controller;
 
-import dao.RawMaterialDAO;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
+import dao.ItemDAO;
+import dao.VendorDAO;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Region;
 import javafx.stage.Stage;
-import javafx.util.Callback;
-import model.RawMaterial;
+import model.Item;
+import model.Vendor;
 
 import java.net.URL;
-import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class GatePassController implements Initializable {
 
     @FXML
-    ChoiceBox<RawMaterial> itemChoice;
+    ChoiceBox<String> itemChoice;
     @FXML
-    ChoiceBox<RawMaterial> partyChoice;
+    ChoiceBox<String> factoryChoice;
+    @FXML
+    ChoiceBox<String> vendorChoice;
     @FXML
     TextField weightEditText;
     @FXML
@@ -33,6 +31,8 @@ public class GatePassController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        initVendorChoiceBox();
+        initItemChoiceBox();
     }
 
     int itemCount = 0;
@@ -40,15 +40,15 @@ public class GatePassController implements Initializable {
     @FXML
     public void AddButton() {
 
-        if (itemChoice.getValue().getId() == 0) {
-            ShowAlert("Please Select Item");
+        if (itemChoice.getSelectionModel().isEmpty()) {
+             UtilityClass.getInstance().ShowAlert("Please Select Item");
             return;
         }
         String weightText = weightEditText.getText();
         double weight = StringToDouble(weightText);
 
         if (weight <= 0) {
-            ShowAlert("Wrong Weight Input");
+            UtilityClass.getInstance().ShowAlert("Wrong Weight Input");
             return;
         }
         AddItem();
@@ -59,11 +59,11 @@ public class GatePassController implements Initializable {
     public void SaveGatePass() {
 
         if(itemCount<1) {
-            ShowAlert("Please Add Item First");
+            UtilityClass.getInstance().ShowAlert("Please Add Item First");
             return;
         }
 
-        ShowAlert("Item Added");
+        UtilityClass.getInstance().ShowAlert("Item Added");
 
         itemCount = 0;
     }
@@ -93,11 +93,28 @@ public class GatePassController implements Initializable {
 
     }
 
-    public  void ShowAlert(String s){
-        Alert alert = new Alert(Alert.AlertType.INFORMATION, s, ButtonType.OK);
-        alert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
-        alert.show();
+
+    void initVendorChoiceBox(){
+
+        vendorChoice.getItems().clear();
+
+        for (Vendor v : VendorDAO.getInstance().GetAll()) {
+            vendorChoice.getItems().add(v.getName());
+        }
+
+//        vendorChoice.setItems(VendorDAO.getInstance().GetAll());
 
     }
+
+    void initItemChoiceBox(){
+
+        itemChoice.getItems().clear();
+
+        for (Item r : ItemDAO.getInstance().GetAll()) {
+            itemChoice.getItems().add(r.getName());
+        }
+        //        itemChoice.setItems(RawMaterialDAO.getInstance().GetAll());
+    }
+
 
 }

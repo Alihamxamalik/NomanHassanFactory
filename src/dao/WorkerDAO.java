@@ -1,8 +1,6 @@
 package dao;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import model.Product;
-import model.RawMaterial;
 import model.Worker;
 
 public class WorkerDAO {
