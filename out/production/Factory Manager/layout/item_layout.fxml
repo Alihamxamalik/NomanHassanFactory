@@ -16,5 +16,5 @@
    <Label alignment="CENTER" layoutX="12.0" layoutY="62.0" prefHeight="9.0" prefWidth="76.0" text="Item Name" />
    <TextField fx:id="txtItem" layoutX="18.0" layoutY="82.0" prefHeight="25.0" prefWidth="150.0" />
    <Button fx:id="btnAdd" layoutX="95.0" layoutY="127.0" mnemonicParsing="false" onMouseClicked="#insertMaterial" prefHeight="25.0" prefWidth="76.0" text="Add" />
-   <CheckBox layoutX="187.0" layoutY="88.0" mnemonicParsing="false" prefHeight="17.0" prefWidth="106.0" text="Assembly Item" />
+   <CheckBox fx:id="checkBoxAssembly" layoutX="187.0" layoutY="88.0" mnemonicParsing="false" prefHeight="17.0" prefWidth="106.0" text="Assembly Item" />
 </Pane>

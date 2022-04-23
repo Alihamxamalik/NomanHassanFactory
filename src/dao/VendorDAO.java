@@ -9,9 +9,9 @@ public class VendorDAO {
     public VendorDAO(){
         list = FXCollections.observableArrayList();
 
-        Vendor r = new Vendor(1,"Ali");
-        Vendor r1 = new Vendor(2,"Usama");
-        Vendor r2 = new Vendor(3,"Hassan");
+        Vendor r = new Vendor("Ali");
+        Vendor r1 = new Vendor("Usama");
+        Vendor r2 = new Vendor("Hassan");
 
         list.add(r);
         list.add(r1);

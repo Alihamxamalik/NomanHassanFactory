@@ -2,22 +2,25 @@ package controller;
 
 import dao.ItemDAO;
 import dao.VendorDAO;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
+import model.GatePassItem;
 import model.Item;
 import model.Vendor;
 
 import java.net.URL;
+import java.util.Collection;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class GatePassController implements Initializable {
 
     @FXML
     ChoiceBox<String> itemChoice;
-    @FXML
-    ChoiceBox<String> factoryChoice;
     @FXML
     ChoiceBox<String> vendorChoice;
     @FXML
@@ -29,10 +32,13 @@ public class GatePassController implements Initializable {
     @FXML
     DatePicker entryDatePicker;
 
+    ObservableList gatePassItemList;
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         initVendorChoiceBox();
         initItemChoiceBox();
+        gatePassItemList = FXCollections.observableArrayList();
     }
 
     int itemCount = 0;
@@ -40,32 +46,57 @@ public class GatePassController implements Initializable {
     @FXML
     public void AddButton() {
 
+        if (vendorChoice.getSelectionModel().isEmpty()) {
+            UtilityClass.getInstance().ShowAlert("Please Select Vendor");
+            return;
+        }
+
         if (itemChoice.getSelectionModel().isEmpty()) {
              UtilityClass.getInstance().ShowAlert("Please Select Item");
             return;
         }
+
         String weightText = weightEditText.getText();
         double weight = StringToDouble(weightText);
-
         if (weight <= 0) {
             UtilityClass.getInstance().ShowAlert("Wrong Weight Input");
             return;
         }
+
+        String bardanaText = bardanaEditText.getText();
+        double bardana = StringToDouble(bardanaText);
+
+        if (bardana <= 0) {
+            UtilityClass.getInstance().ShowAlert("Wrong Bardana Input");
+            return;
+        }
+
+        String priceText = priceEditText.getText();
+        double price = StringToDouble(priceText);
+
+        if (price <= 0) {
+            UtilityClass.getInstance().ShowAlert("Wrong Price Input");
+            return;
+        }
+
+
         AddItem();
 
     }
 
+
     @FXML
     public void SaveGatePass() {
 
-        if(itemCount<1) {
+        if(gatePassItemList.size()<1) {
             UtilityClass.getInstance().ShowAlert("Please Add Item First");
             return;
         }
 
         UtilityClass.getInstance().ShowAlert("Item Added");
 
-        itemCount = 0;
+
+
     }
 
 
@@ -91,6 +122,20 @@ public class GatePassController implements Initializable {
 
         itemCount++;
 
+        int itemIndex =itemChoice.getSelectionModel().getSelectedIndex();
+        int vendorIndex =vendorChoice.getSelectionModel().getSelectedIndex();
+        double weightValue =  Double.parseDouble(weightEditText.getText());
+        double bardanaValue =  Double.parseDouble(bardanaEditText.getText());
+        double priceValue =  Double.parseDouble(priceEditText.getText());
+
+        GatePassItem item = new GatePassItem(
+                ItemDAO.instance.getByListIndex(itemIndex).getId(),
+                weightValue,
+                bardanaValue,
+                priceValue
+                );
+
+        gatePassItemList.add(item);
     }
 
 
@@ -111,7 +156,11 @@ public class GatePassController implements Initializable {
         itemChoice.getItems().clear();
 
         for (Item r : ItemDAO.getInstance().GetAll()) {
-            itemChoice.getItems().add(r.getName());
+            String s = r.getName();
+            if(r.isAssemble())
+                s = s+" (Assembly Item)";
+
+            itemChoice.getItems().add(s);
         }
         //        itemChoice.setItems(RawMaterialDAO.getInstance().GetAll());
     }

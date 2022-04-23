@@ -8,13 +8,13 @@ public class ItemDAO {
     private static ObservableList<Item> list;
     public ItemDAO(){
         list = FXCollections.observableArrayList();
-        Item r = new Item(1,"Dabba",false);
-        Item r1 = new Item(2,"Chilka",false);
-        Item r2 = new Item(3,"Niyara",false);
-
-        list.add(r);
-        list.add(r1);
-        list.add(r2);
+//        Item r = new Item("Dabba",false);
+//        Item r1 = new Item("Chilka",false);
+//        Item r2 = new Item("Niyara",false);
+//
+//        list.add(r);
+//        list.add(r1);
+//        list.add(r2);
     }
     public static ItemDAO instance;
     public static ItemDAO getInstance(){

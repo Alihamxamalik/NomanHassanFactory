@@ -17,8 +17,7 @@ public class Item {
         return assemble;
     }
 
-    public Item(long id, String name, boolean assemble) {
-        this.id= id;
+    public Item(String name, boolean assemble) {
         this.name = name;
         this.assemble = assemble;
     }

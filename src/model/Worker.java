@@ -1,10 +1,9 @@
 package model;
 
 public class Worker {
-    private int id;
+    private long id;
 
-    public Worker(int id, String name) {
-        this.id = id;
+    public Worker(String name) {
         this.name = name;
     }
 

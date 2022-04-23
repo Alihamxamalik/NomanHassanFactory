@@ -1,5 +1,6 @@
 package controller;
 
+import database.Database;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -20,7 +21,18 @@ public class MenuController implements Initializable {
     Button productButton;
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        if(Database.getInstance().getConnection()!=null){
 
+            System.out.println("Connected");
+            if(Database.getInstance().tableExists("Item")){
+                System.out.println("Table exist");
+            }else {
+                System.out.println("Table not exist");
+
+            }
+        }
+        else
+            System.out.println("Not Connected");
     }
     @FXML
     void OpenProductMenu(){

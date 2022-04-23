@@ -112,8 +112,7 @@ public class VendorController implements Initializable {
     void insertVendor() {
         String VendorName = txtVendor.getText().toString();
         if(!VendorName.equals("")){
-                long d = VendorDAO.getInstance().getLastId()+1;
-                Vendor Vendor = new Vendor(d,txtVendor.getText().toString());
+                Vendor Vendor = new Vendor(txtVendor.getText().toString());
                 instance.insert(Vendor);
                 txtVendor.clear();
 

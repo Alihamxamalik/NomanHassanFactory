@@ -104,10 +104,7 @@ public class ItemController implements Initializable {
     void insertMaterial() {
         String materialName = txtItem.getText();
         if(!materialName.equals("")){
-
-            long id = ItemDAO.getInstance().getLastId()+1;
-
-            Item material = new Item(id, txtItem.getText(), checkBoxAssembly.isSelected());
+            Item material = new Item( txtItem.getText(), checkBoxAssembly.isSelected());
             instance.insert(material);
             txtItem.clear();
             checkBoxAssembly.setSelected(false);

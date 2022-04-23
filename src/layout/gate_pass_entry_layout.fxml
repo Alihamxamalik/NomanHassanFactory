@@ -23,7 +23,7 @@
      </columns>
    </TableView>
    <Label layoutX="15.0" layoutY="135.0" prefHeight="25.0" prefWidth="150.0" text="Select Item*" />
-   <ChoiceBox fx:id="RawMaterialChoice" layoutX="15.0" layoutY="160.0" prefWidth="150.0" />
+   <ChoiceBox fx:id="itemChoice" layoutX="15.0" layoutY="160.0" prefWidth="150.0" />
    <Label layoutX="175.0" layoutY="135.0" prefHeight="25.0" prefWidth="149.0" text="Weight*" />
    <TextField fx:id="weightEditText" layoutX="175.0" layoutY="160.0" />
    <Label layoutX="335.0" layoutY="135.0" prefHeight="25.0" prefWidth="149.0" text="Bardana" />
@@ -31,7 +31,7 @@
     <Label layoutX="495.0" layoutY="135.0" prefHeight="25.0" prefWidth="149.0" text="Price" />
     <TextField fx:id="priceEditText" layoutX="495.0" layoutY="160.0" />
    <Button fx:id="addBtn" layoutX="655.0" layoutY="160.0" mnemonicParsing="false" onAction="#AddButton" prefHeight="25.0" prefWidth="50.0" text="Add" />
-   <Button fx:id="saveBtn" layoutX="652.0" layoutY="552.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="141.0" text="Save Gate Pass" />
+   <Button fx:id="saveBtn" layoutX="652.0" layoutY="553.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="141.0" text="Save Gate Pass" />
    <Button layoutX="746.0" layoutY="5.0" mnemonicParsing="false" onAction="#closeWindow" prefHeight="25.0" prefWidth="50.0" text="X" />
    <DatePicker fx:id="entryDatePicker" layoutX="597.0" layoutY="70.0" />
    <Label layoutX="15.0" layoutY="45.0" prefHeight="25.0" prefWidth="150.0" text="Select Vender*" />

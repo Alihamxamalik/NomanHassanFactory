@@ -12,8 +12,8 @@ public class Vendor {
         return name;
     }
 
-    public Vendor(long id,String name) {
-        this.id = id;
+    public Vendor(String name) {
+
         this.name = name;
     }
 }
