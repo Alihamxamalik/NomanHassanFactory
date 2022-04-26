@@ -21,4 +21,9 @@ public class Item {
         this.name = name;
         this.assemble = assemble;
     }
+    public Item(long id,String name, boolean assemble) {
+        this.id = id;
+        this.name = name;
+        this.assemble = assemble;
+    }
 }

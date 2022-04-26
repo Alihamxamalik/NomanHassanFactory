@@ -10,9 +10,15 @@ import javafx.scene.control.Button;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import model.Item;
+import sun.text.normalizer.Utility;
+import utility.ActionCallback;
+import utility.DataItemCallback;
+import utility.DataListCallback;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class MenuController implements Initializable {
@@ -24,12 +30,6 @@ public class MenuController implements Initializable {
         if(Database.getInstance().getConnection()!=null){
 
             System.out.println("Connected");
-            if(Database.getInstance().tableExists("Item")){
-                System.out.println("Table exist");
-            }else {
-                System.out.println("Table not exist");
-
-            }
         }
         else
             System.out.println("Not Connected");

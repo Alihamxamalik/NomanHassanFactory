@@ -11,10 +11,9 @@ import javafx.stage.Stage;
 import model.GatePassItem;
 import model.Item;
 import model.Vendor;
+import utility.DataListCallback;
 
 import java.net.URL;
-import java.util.Collection;
-import java.util.List;
 import java.util.ResourceBundle;
 
 public class GatePassController implements Initializable {
@@ -47,19 +46,19 @@ public class GatePassController implements Initializable {
     public void AddButton() {
 
         if (vendorChoice.getSelectionModel().isEmpty()) {
-            UtilityClass.getInstance().ShowAlert("Please Select Vendor");
+            UtilityClass.getInstance().showAlert("Please Select Vendor");
             return;
         }
 
         if (itemChoice.getSelectionModel().isEmpty()) {
-             UtilityClass.getInstance().ShowAlert("Please Select Item");
+            UtilityClass.getInstance().showAlert("Please Select Item");
             return;
         }
 
         String weightText = weightEditText.getText();
         double weight = StringToDouble(weightText);
         if (weight <= 0) {
-            UtilityClass.getInstance().ShowAlert("Wrong Weight Input");
+            UtilityClass.getInstance().showAlert("Wrong Weight Input");
             return;
         }
 
@@ -67,7 +66,7 @@ public class GatePassController implements Initializable {
         double bardana = StringToDouble(bardanaText);
 
         if (bardana <= 0) {
-            UtilityClass.getInstance().ShowAlert("Wrong Bardana Input");
+            UtilityClass.getInstance().showAlert("Wrong Bardana Input");
             return;
         }
 
@@ -75,7 +74,7 @@ public class GatePassController implements Initializable {
         double price = StringToDouble(priceText);
 
         if (price <= 0) {
-            UtilityClass.getInstance().ShowAlert("Wrong Price Input");
+            UtilityClass.getInstance().showAlert("Wrong Price Input");
             return;
         }
 
@@ -88,13 +87,12 @@ public class GatePassController implements Initializable {
     @FXML
     public void SaveGatePass() {
 
-        if(gatePassItemList.size()<1) {
-            UtilityClass.getInstance().ShowAlert("Please Add Item First");
+        if (gatePassItemList.size() < 1) {
+            UtilityClass.getInstance().showAlert("Please Add Item First");
             return;
         }
 
-        UtilityClass.getInstance().ShowAlert("Item Added");
-
+        UtilityClass.getInstance().showAlert("Item Added");
 
 
     }
@@ -122,24 +120,24 @@ public class GatePassController implements Initializable {
 
         itemCount++;
 
-        int itemIndex =itemChoice.getSelectionModel().getSelectedIndex();
-        int vendorIndex =vendorChoice.getSelectionModel().getSelectedIndex();
-        double weightValue =  Double.parseDouble(weightEditText.getText());
-        double bardanaValue =  Double.parseDouble(bardanaEditText.getText());
-        double priceValue =  Double.parseDouble(priceEditText.getText());
+        int itemIndex = itemChoice.getSelectionModel().getSelectedIndex();
+        int vendorIndex = vendorChoice.getSelectionModel().getSelectedIndex();
+        double weightValue = Double.parseDouble(weightEditText.getText());
+        double bardanaValue = Double.parseDouble(bardanaEditText.getText());
+        double priceValue = Double.parseDouble(priceEditText.getText());
 
         GatePassItem item = new GatePassItem(
                 ItemDAO.instance.getByListIndex(itemIndex).getId(),
                 weightValue,
                 bardanaValue,
                 priceValue
-                );
+        );
 
         gatePassItemList.add(item);
     }
 
 
-    void initVendorChoiceBox(){
+    void initVendorChoiceBox() {
 
         vendorChoice.getItems().clear();
 
@@ -151,17 +149,28 @@ public class GatePassController implements Initializable {
 
     }
 
-    void initItemChoiceBox(){
+    void initItemChoiceBox() {
 
         itemChoice.getItems().clear();
 
-        for (Item r : ItemDAO.getInstance().GetAll()) {
-            String s = r.getName();
-            if(r.isAssemble())
-                s = s+" (Assembly Item)";
+        ItemDAO.getInstance().getAll(new DataListCallback<Item>() {
+            @Override
+            public void OnSuccess(ObservableList<Item> list) {
+                for (Item r : list) {
+                    String s = r.getName();
+                    if (r.isAssemble())
+                        s = s + " (Assembly Item)";
 
-            itemChoice.getItems().add(s);
-        }
+                    itemChoice.getItems().add(s);
+                }
+            }
+
+            @Override
+            public void OnFailed(String msg) {
+                closeWindow();
+            }
+        });
+
         //        itemChoice.setItems(RawMaterialDAO.getInstance().GetAll());
     }
 
