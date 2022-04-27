@@ -11,6 +11,7 @@ import javafx.stage.Stage;
 import model.GatePassItem;
 import model.Item;
 import model.Vendor;
+import utility.ActionCallback;
 import utility.DataListCallback;
 
 import java.net.URL;
@@ -39,8 +40,6 @@ public class GatePassController implements Initializable {
         initItemChoiceBox();
         gatePassItemList = FXCollections.observableArrayList();
     }
-
-    int itemCount = 0;
 
     @FXML
     public void AddButton() {
@@ -117,9 +116,6 @@ public class GatePassController implements Initializable {
 
 
     void AddItem() {
-
-        itemCount++;
-
         int itemIndex = itemChoice.getSelectionModel().getSelectedIndex();
         int vendorIndex = vendorChoice.getSelectionModel().getSelectedIndex();
         double weightValue = Double.parseDouble(weightEditText.getText());
@@ -141,9 +137,30 @@ public class GatePassController implements Initializable {
 
         vendorChoice.getItems().clear();
 
-        for (Vendor v : VendorDAO.getInstance().GetAll()) {
-            vendorChoice.getItems().add(v.getName());
-        }
+        VendorDAO.getInstance().getAll(new DataListCallback<Vendor>() {
+            @Override
+            public void OnSuccess(ObservableList<Vendor> list) {
+                for (Vendor v : list) {
+                    vendorChoice.getItems().add(v.getId()+" : "+v.getName());
+                }
+            }
+
+            @Override
+            public void OnFailed(String msg) {
+                UtilityClass.getInstance().showErrorPopup("Something went wrong", new ActionCallback() {
+                    @Override
+                    public void OnAction() {
+                        closeWindow();
+                    }
+
+                    @Override
+                    public void OnCancel() {
+
+                    }
+                });
+            }
+        });
+
 
 //        vendorChoice.setItems(VendorDAO.getInstance().GetAll());
 
@@ -157,9 +174,9 @@ public class GatePassController implements Initializable {
             @Override
             public void OnSuccess(ObservableList<Item> list) {
                 for (Item r : list) {
-                    String s = r.getName();
+                    String s = r.getId()+" : "+r.getName();
                     if (r.isAssemble())
-                        s = s + " (Assembly Item)";
+                        s = s + " (Assemble)";
 
                     itemChoice.getItems().add(s);
                 }
@@ -170,8 +187,6 @@ public class GatePassController implements Initializable {
                 closeWindow();
             }
         });
-
-        //        itemChoice.setItems(RawMaterialDAO.getInstance().GetAll());
     }
 
 

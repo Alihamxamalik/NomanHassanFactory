@@ -1,6 +1,7 @@
 package controller;
 
 import dao.VendorDAO;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -10,6 +11,8 @@ import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import model.Vendor;
+import utility.DataItemCallback;
+import utility.DataListCallback;
 
 import java.net.URL;
 import java.util.Optional;
@@ -24,63 +27,66 @@ public class VendorController implements Initializable {
     Button btnAdd;
     @FXML
     TextField txtVendor;
+    @FXML
+    TextField txtPhone;
     VendorDAO instance;
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         instance = VendorDAO.getInstance();
-        showAllProduct();
+        showAllVendor();
     }
 
-    void showAllProduct() {
-        vendorListView.setItems(instance.GetAll());
+    void showAllVendor() {
 
-//
-//        partyListView.setCellFactory(new Callback<ListView, ListCell>() {
-//            @Override
-//            public ListCell call(ListView param) {
-//                return null;
-//            }
-//        });
-
-
-        vendorListView.setCellFactory(new Callback<ListView<Vendor>, ListCell<Vendor>>() {
+        instance.getAll(new DataListCallback<Vendor>() {
             @Override
-            public ListCell<Vendor> call(ListView<Vendor> param) {
+            public void OnSuccess(ObservableList<Vendor> list) {
+                vendorListView.setItems(list);
 
-                ListCell<Vendor> cell = new ListCell<Vendor>() {
+                vendorListView.setCellFactory(new Callback<ListView<Vendor>, ListCell<Vendor>>() {
                     @Override
-                    protected void updateItem(Vendor vendor, boolean empty) {
-                        super.updateItem(vendor, empty);
+                    public ListCell<Vendor> call(ListView<Vendor> param) {
 
-                        if (!empty) {
-                            HBox box = new HBox(20);
-                            Label lblName = new Label(vendor.getId()+" "+vendor.getName());
-                            Button btn = new Button("x");
-                            Button btnShowStock = new Button("Show Detail");
-                            btn.setOnAction(new EventHandler<ActionEvent>() {
-                                @Override
-                                public void handle(ActionEvent event) {
-                                    confirmDelete(vendor);
-                                }
-                            });
-                            btnShowStock.setOnAction(new EventHandler<ActionEvent>() {
-                                @Override
-                                public void handle(ActionEvent event) {
-                                    showDetailScreen();
-                                }
-                            });
+                        ListCell<Vendor> cell = new ListCell<Vendor>() {
+                            @Override
+                            protected void updateItem(Vendor vendor, boolean empty) {
+                                super.updateItem(vendor, empty);
 
-                            box.getChildren().addAll(btn,btnShowStock,lblName );
-                            setGraphic(box);
-                            //setText(value);
-                        } else
-                            setGraphic(null);
+                                if (!empty) {
+                                    HBox box = new HBox(20);
+                                    Label lblName = new Label("\t"+vendor.getId()+" : "+vendor.getName());
+                                    Button btn = new Button("x");
+                                    Button btnShowStock = new Button("Show Detail");
+                                    btn.setOnAction(new EventHandler<ActionEvent>() {
+                                        @Override
+                                        public void handle(ActionEvent event) {
+                                            confirmDelete(vendor);
+                                        }
+                                    });
+                                    btnShowStock.setOnAction(new EventHandler<ActionEvent>() {
+                                        @Override
+                                        public void handle(ActionEvent event) {
+                                            showDetailScreen();
+                                        }
+                                    });
+
+                                    box.getChildren().addAll(btn,btnShowStock,lblName );
+                                    setGraphic(box);
+                                    //setText(value);
+                                } else
+                                    setGraphic(null);
+                            }
+                        };
+                        return cell;
                     }
-                };
-                return cell;
+                });
+            }
+
+            @Override
+            public void OnFailed(String msg) {
+
             }
         });
-
 
     }
 
@@ -99,7 +105,18 @@ public class VendorController implements Initializable {
         Optional<ButtonType> result = alert.showAndWait();
         if (result.get() == ButtonType.OK){
             // ... user chose OK
-            instance.delete(vendor);
+            instance.delete(vendor, new DataItemCallback<Vendor>() {
+                @Override
+                public void OnSuccess(Vendor _vendor) {
+
+                    UtilityClass.getInstance().showAlert("Delete Successfully");
+                }
+
+                @Override
+                public void OnFailed(String msg) {
+                    UtilityClass.getInstance().showErrorPopup("Delete Failed",null);
+                }
+            });
         } else {
             // ... user chose CANCEL or closed the dialog
         }
@@ -108,11 +125,24 @@ public class VendorController implements Initializable {
 
     @FXML
     void insertVendor() {
-        String VendorName = txtVendor.getText().toString();
-        if(!VendorName.equals("")){
-                Vendor Vendor = new Vendor(txtVendor.getText().toString());
-                instance.insert(Vendor);
-                txtVendor.clear();
+        String vendorName = txtVendor.getText().toString();
+        String vendorPhone = txtPhone.getText().toString();
+        if(!vendorName.equals("")&&!vendorPhone.equals("")){
+            Vendor vendor = new Vendor(vendorName,vendorPhone);
+                instance.insert(vendor, new DataItemCallback<Vendor>() {
+                    @Override
+                    public void OnSuccess(Vendor _vendor) {
+                        showAllVendor();
+                        vendorListView.refresh();
+                        txtVendor.clear();
+                        txtPhone.clear();
+                    }
+
+                    @Override
+                    public void OnFailed(String msg) {
+                    UtilityClass.getInstance().showErrorPopup("Something went wrong",null);
+                    }
+                });
 
 
         }

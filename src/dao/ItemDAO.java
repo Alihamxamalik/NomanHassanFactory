@@ -66,6 +66,22 @@ public class ItemDAO {
         });
     }
 
+    public void update(Item item,DataItemCallback callback){
+        Database.getInstance().updateItem(item, new DataItemCallback<Item>() {
+            @Override
+            public void OnSuccess(Item _item) {
+                list.remove(item);
+                list.add(_item);
+                callback.OnSuccess(_item);
+            }
+
+            @Override
+            public void OnFailed(String msg) {
+                callback.OnFailed(msg);
+            }
+        });
+    }
+
     public void insert(Item item, Callback callback) {
         Database.getInstance().insertItem(item, new DataItemCallback<Item>() {
             @Override
@@ -84,11 +100,11 @@ public class ItemDAO {
     public void delete(Item item, DataItemCallback callback) {
 
         if (item != null)
-            Database.getInstance().deleteItem(item, new DataItemCallback() {
+            Database.getInstance().deleteItem(item, new DataItemCallback<Item>() {
                 @Override
-                public void OnSuccess(Object o) {
-                    list.remove(item);
-                    callback.OnSuccess(item);
+                public void OnSuccess(Item _item) {
+                    list.remove(_item);
+                    callback.OnSuccess(_item);
                 }
 
                 @Override

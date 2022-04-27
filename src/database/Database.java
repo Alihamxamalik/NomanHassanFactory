@@ -3,6 +3,7 @@ package database;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import model.Item;
+import model.Vendor;
 import utility.Callback;
 import utility.DataItemCallback;
 import utility.DataListCallback;
@@ -13,6 +14,7 @@ import java.util.List;
 public class Database {
     ///Table Names
     public String ITEM_TABLE = "item";
+    public String VENDOR_TABLE = "vendor";
 
     public static Database instance;
 
@@ -22,6 +24,14 @@ public class Database {
             instance = new Database();
         return instance;
     }
+    public Database(){
+        createTable();
+    }
+    public void createTable(){
+        createItemTable();
+        createVendorTable();
+    }
+
     public Connection conn;
     String url = "jdbc:sqlite:C:/sqlite/db/NHDB.db";
     public Connection getConnection() {
@@ -161,6 +171,104 @@ public class Database {
         }
     }
 
+
+    ///Vendor Related Code
+    public void createVendorTable(){
+        conn = this.connect();
+        // SQL statement for creating a new table
+        String sql = "CREATE TABLE IF NOT EXISTS \""+VENDOR_TABLE+"\" (\n" +
+                "\t\"id\"\tINTEGER NOT NULL,\n" +
+                "\t\"name\"\tTEXT NOT NULL,\n" +
+                "\t\"phone\"\tTEXT NOT NULL,\n" +
+                "\tPRIMARY KEY(\"id\" AUTOINCREMENT)\n" +
+                ");";
+        try{
+            Statement stmt = conn.createStatement();
+            stmt.execute(sql);
+            conn.close();
+        } catch (SQLException e) {
+            System.out.println("ERROR "+e.getMessage());
+        }
+    }
+    public void insertVendor(Vendor vendor, DataItemCallback callback){
+        String sql = "INSERT INTO "+VENDOR_TABLE+"(name,phone) VALUES(?,?)";
+        conn = this.connect();
+        try {
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, vendor.getName());
+           pstmt.setString(2, vendor.getPhone());
+            pstmt.executeUpdate();
+            conn.close();
+            callback.OnSuccess(vendor);
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            callback.OnFailed(e.getMessage());
+
+        }
+    }
+    public void getAllVendor(DataListCallback<Vendor> callback) {
+        conn = connect();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        ObservableList<Vendor> _list = FXCollections.observableArrayList();
+        try {
+            String sql = "SELECT * FROM "+VENDOR_TABLE;
+            ps = conn.prepareStatement(sql);
+            rs = ps.executeQuery();
+
+            while(rs.next()) {
+                Vendor vendor = new Vendor
+                        (rs.getInt("id"),rs.getString("name"), rs.getString("phone"));
+                _list.add(vendor);
+            }
+
+            callback.OnSuccess(_list);
+        } catch(SQLException e) {
+            callback.OnFailed(e.getMessage());
+            System.out.println(e.toString());
+        } finally {
+            try {
+                rs.close();
+                ps.close();
+                conn.close();
+            } catch(SQLException e) {
+                System.out.println(e.toString());
+            }
+        }
+
+
+    }
+    public void updateVendor(Vendor vendor, DataItemCallback<Vendor> callback){
+        String sql = "UPDATE "+VENDOR_TABLE+" SET name=? WHERE id=?";
+        conn = this.connect();
+        try {
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, vendor.getName());
+            pstmt.setLong(2, (int)vendor.getId());
+            pstmt.executeUpdate();
+            conn.close();
+            callback.OnSuccess(vendor);
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            callback.OnFailed(e.getMessage());
+
+        }
+    }
+    public void deleteVendor(Vendor vendor, DataItemCallback callback){
+        String sql = "DELETE FROM "+VENDOR_TABLE+" WHERE id = ?";
+        conn = this.connect();
+        try {
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setLong(1, vendor.getId());
+
+            pstmt.executeUpdate();
+            conn.close();
+            callback.OnSuccess(vendor);
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            callback.OnFailed(e.getMessage());
+        }
+    }
 }
 
 

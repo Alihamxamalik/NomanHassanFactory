@@ -35,10 +35,10 @@ public class ItemController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         instance = ItemDAO.getInstance();
-        initItemList();
+        showItemList();
     }
 
-    void initItemList() {
+    void showItemList() {
         instance.getAll(new DataListCallback<Item>() {
             @Override
             public void OnSuccess(ObservableList<Item> list) {
@@ -49,14 +49,14 @@ public class ItemController implements Initializable {
 
                         ListCell<Item> cell = new ListCell<Item>() {
                             @Override
-                            protected void updateItem(Item material, boolean empty) {
-                                super.updateItem(material, empty);
+                            protected void updateItem(Item item, boolean empty) {
+                                super.updateItem(item, empty);
 
                                 if (!empty) {
                                     HBox box = new HBox(20);
-                                    String s = material.getName();
-                                    if (material.isAssemble())
-                                        s = s + " (Assembly Item)";
+                                    String s = "\t"+item.getId()+" : "+item.getName();
+                                    if (item.isAssemble())
+                                        s = s + "     (Assembly Item)";
 
                                     Label lblName = new Label(s);
                                     Button btn = new Button("x");
@@ -64,7 +64,7 @@ public class ItemController implements Initializable {
                                     btn.setOnAction(new EventHandler<ActionEvent>() {
                                         @Override
                                         public void handle(ActionEvent event) {
-                                            confirmDelete(material);
+                                            confirmDelete(item);
                                         }
                                     });
 //                            btnShowStock.setOnAction(new EventHandler<ActionEvent>() {
@@ -160,7 +160,7 @@ public class ItemController implements Initializable {
                 public void OnSuccess() {
                     txtItem.clear();
                     checkBoxAssembly.setSelected(false);
-                    itemListView.refresh();
+                    showItemList();
                 }
 
                 @Override
