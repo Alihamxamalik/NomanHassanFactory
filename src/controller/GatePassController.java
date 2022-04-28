@@ -1,13 +1,19 @@
 package controller;
 
+import dao.GatePassDAO;
 import dao.ItemDAO;
 import dao.VendorDAO;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
+import javafx.util.Callback;
+import model.GatePass;
 import model.GatePassItem;
 import model.Item;
 import model.Vendor;
@@ -15,6 +21,7 @@ import utility.ActionCallback;
 import utility.DataListCallback;
 
 import java.net.URL;
+import java.sql.SQLOutput;
 import java.util.ResourceBundle;
 
 public class GatePassController implements Initializable {
@@ -31,14 +38,23 @@ public class GatePassController implements Initializable {
     TextField priceEditText;
     @FXML
     DatePicker entryDatePicker;
-
+    @FXML
+    ToggleButton priceToggle;
     ObservableList gatePassItemList;
+
+    @FXML
+    TableView<GatePassItem> gatePassItemTable;
+    @FXML
+    TableColumn<GatePassItem, String>
+            indexColumn, nameColumn, weightColumn, bardanaColumn, netWeightColumn, priceColumn, totalPriceColumn;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         initVendorChoiceBox();
         initItemChoiceBox();
         gatePassItemList = FXCollections.observableArrayList();
+        initGatePassItemTable();
+        onPriceToggle();
     }
 
     @FXML
@@ -64,7 +80,7 @@ public class GatePassController implements Initializable {
         String bardanaText = bardanaEditText.getText();
         double bardana = StringToDouble(bardanaText);
 
-        if (bardana <= 0) {
+        if (bardana < 0) {
             UtilityClass.getInstance().showAlert("Wrong Bardana Input");
             return;
         }
@@ -82,16 +98,36 @@ public class GatePassController implements Initializable {
 
     }
 
+    @FXML
+    public void onPriceToggle() {
+        if (priceToggle.isSelected())
+            priceToggle.setText("Price in 37.324 KG");
+        else
+            priceToggle.setText("Price in 1 KG");
+
+    }
 
     @FXML
-    public void SaveGatePass() {
+    public void saveGatePass() {
+
+        if(entryDatePicker.getValue() == null && entryDatePicker.isEditable()){
+            UtilityClass.getInstance().showAlert("Please set date first");
+            return;
+        }
+        else
+        {
+            System.out.println(entryDatePicker.getValue().toString());
+        }
 
         if (gatePassItemList.size() < 1) {
             UtilityClass.getInstance().showAlert("Please Add Item First");
             return;
         }
 
-        UtilityClass.getInstance().showAlert("Item Added");
+        int vendorIndex = vendorChoice.getSelectionModel().getSelectedIndex();
+        GatePass gatePass = new GatePass
+                (VendorDAO.getInstance().getByListIndex(vendorIndex).getId(),entryDatePicker.getValue().toString());
+        GatePassDAO.getInstance().insert(gatePass);
 
 
     }
@@ -126,12 +162,80 @@ public class GatePassController implements Initializable {
                 ItemDAO.instance.getByListIndex(itemIndex).getId(),
                 weightValue,
                 bardanaValue,
-                priceValue
+                priceValue,
+                !priceToggle.isSelected()
         );
 
         gatePassItemList.add(item);
+        System.out.println(gatePassItemList.size());
+
     }
 
+
+    void initGatePassItemTable() {
+
+        indexColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<GatePassItem, String>, ObservableValue<String>>() {
+            @Override
+            public ObservableValue<String> call(TableColumn.CellDataFeatures<GatePassItem, String> param) {
+                return new SimpleStringProperty(gatePassItemList.indexOf(param.getValue()) + 1 + "");
+            }
+        });
+        nameColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<GatePassItem, String>, ObservableValue<String>>() {
+            @Override
+            public ObservableValue<String> call(TableColumn.CellDataFeatures<GatePassItem, String> param) {
+                return new SimpleStringProperty(ItemDAO.getInstance().getById(param.getValue().getItemId()).getName());
+            }
+        });
+        weightColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<GatePassItem, String>, ObservableValue<String>>() {
+            @Override
+            public ObservableValue<String> call(TableColumn.CellDataFeatures<GatePassItem, String> param) {
+                return new SimpleStringProperty(param.getValue().getWeight() + "");
+            }
+        });
+        bardanaColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<GatePassItem, String>, ObservableValue<String>>() {
+            @Override
+            public ObservableValue<String> call(TableColumn.CellDataFeatures<GatePassItem, String> param) {
+                return new SimpleStringProperty(param.getValue().getBardana() + "");
+            }
+        });
+        netWeightColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<GatePassItem, String>, ObservableValue<String>>() {
+            @Override
+            public ObservableValue<String> call(TableColumn.CellDataFeatures<GatePassItem, String> param) {
+                return new SimpleStringProperty(param.getValue().getNetWeight() + "");
+            }
+        });
+
+        priceColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<GatePassItem, String>, ObservableValue<String>>() {
+            @Override
+            public ObservableValue<String> call(TableColumn.CellDataFeatures<GatePassItem, String> param) {
+
+                String s = "";
+                if(param.getValue().isIn1KG())
+                    s = "(1KG)";
+                else
+                    s = "(Maund)";
+
+                String text =  param.getValue().getPrice() + " "+s;
+                return new SimpleStringProperty(text);
+            }
+        });
+        totalPriceColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<GatePassItem, String>, ObservableValue<String>>() {
+            @Override
+            public ObservableValue<String> call(TableColumn.CellDataFeatures<GatePassItem, String> param) {
+                return new SimpleStringProperty( Math.round(param.getValue().getTotalPrice()) + "");
+            }
+        });
+
+        gatePassItemTable.setItems(gatePassItemList);
+
+    }
+
+    @FXML
+    public void deleteItem(){
+        if(gatePassItemTable.getSelectionModel().getSelectedItem()!=null) {
+            gatePassItemTable.getItems().remove(gatePassItemTable.getSelectionModel().getSelectedItem());
+        }
+    }
 
     void initVendorChoiceBox() {
 
@@ -141,7 +245,7 @@ public class GatePassController implements Initializable {
             @Override
             public void OnSuccess(ObservableList<Vendor> list) {
                 for (Vendor v : list) {
-                    vendorChoice.getItems().add(v.getId()+" : "+v.getName());
+                    vendorChoice.getItems().add(v.getId() + " : " + v.getName());
                 }
             }
 
@@ -174,7 +278,7 @@ public class GatePassController implements Initializable {
             @Override
             public void OnSuccess(ObservableList<Item> list) {
                 for (Item r : list) {
-                    String s = r.getId()+" : "+r.getName();
+                    String s = r.getId() + " : " + r.getName();
                     if (r.isAssemble())
                         s = s + " (Assemble)";
 
@@ -188,6 +292,5 @@ public class GatePassController implements Initializable {
             }
         });
     }
-
 
 }

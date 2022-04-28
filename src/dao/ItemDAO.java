@@ -35,7 +35,7 @@ public class ItemDAO {
         return instance;
     }
 
-    public Item getById(int id) {
+    public Item getById(long id) {
 
         for (Item r : list) {
             if (r.getId() == id) {

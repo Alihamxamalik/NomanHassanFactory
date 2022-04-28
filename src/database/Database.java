@@ -2,6 +2,7 @@ package database;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import model.GatePass;
 import model.Item;
 import model.Vendor;
 import utility.Callback;
@@ -15,6 +16,7 @@ public class Database {
     ///Table Names
     public String ITEM_TABLE = "item";
     public String VENDOR_TABLE = "vendor";
+    public String GATE_PASS_TABLE = "gate_pass";
 
     public static Database instance;
 
@@ -30,6 +32,7 @@ public class Database {
     public void createTable(){
         createItemTable();
         createVendorTable();
+        createGatePassTable();
     }
 
     public Connection conn;
@@ -269,6 +272,112 @@ public class Database {
             callback.OnFailed(e.getMessage());
         }
     }
+
+    //GatePass Related Code
+    public void createGatePassTable(){
+        conn = this.connect();
+        // SQL statement for creating a new table
+        String sql = "CREATE TABLE IF NOT EXISTS \""+GATE_PASS_TABLE+"\" (\n" +
+                "\t\"id\"\tINTEGER NOT NULL,\n" +
+                "\t\"vendorId\"\tINTEGER NOT NULL,\n" +
+                "\t\"date\"\tTEXT NOT NULL,\n" +
+                "\tPRIMARY KEY(\"id\" AUTOINCREMENT)\n" +
+                ");";
+        try{
+            Statement stmt = conn.createStatement();
+            stmt.execute(sql);
+            conn.close();
+        } catch (SQLException e) {
+            System.out.println("ERROR "+e.getMessage());
+        }
+    }
+    public void insertGatePass(GatePass gatePass, DataItemCallback callback){
+        String sql = "INSERT INTO "+GATE_PASS_TABLE+"(vendorId,date) VALUES(?,?)";
+        conn = this.connect();
+        try {
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setLong(1, gatePass.getVendorId());
+            pstmt.setString(2, gatePass.getDate());
+            pstmt.executeUpdate();
+            ResultSet rs = pstmt.getGeneratedKeys();
+            int generatedKey = 0;
+            if (rs.next()) {
+                generatedKey = rs.getInt(1);
+                gatePass.setId(generatedKey);
+            }
+            conn.close();
+
+            //get next key
+            callback.OnSuccess(gatePass);
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            callback.OnFailed(e.getMessage());
+
+        }
+    }
+    public void getAllGatePass(DataListCallback<GatePass> callback) {
+        conn = connect();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        ObservableList<GatePass> _list = FXCollections.observableArrayList();
+        try {
+            String sql = "SELECT * FROM "+GATE_PASS_TABLE;
+            ps = conn.prepareStatement(sql);
+            rs = ps.executeQuery();
+
+            while(rs.next()) {
+                GatePass gatePass = new GatePass
+                        (rs.getInt("id"),rs.getInt("vendorId"), rs.getString("date"));
+                _list.add(gatePass);
+            }
+
+            callback.OnSuccess(_list);
+        } catch(SQLException e) {
+            callback.OnFailed(e.getMessage());
+            System.out.println(e.toString());
+        } finally {
+            try {
+                rs.close();
+                ps.close();
+                conn.close();
+            } catch(SQLException e) {
+                System.out.println(e.toString());
+            }
+        }
+
+
+    }
+//    public void updateGatePass(GatePass gatePass, DataItemCallback<GatePass> callback){
+//        String sql = "UPDATE "+GATE_PASS_TABLE+" SET name=? WHERE id=?";
+//        conn = this.connect();
+//        try {
+//            PreparedStatement pstmt = conn.prepareStatement(sql);
+//            pstmt.setString(1, vendor.getName());
+//            pstmt.setLong(2, (int)vendor.getId());
+//            pstmt.executeUpdate();
+//            conn.close();
+//            callback.OnSuccess(vendor);
+//        } catch (SQLException e) {
+//            System.out.println(e.getMessage());
+//            callback.OnFailed(e.getMessage());
+//
+//        }
+//    }
+//    public void deleteGatePass(Vendor vendor, DataItemCallback callback){
+//        String sql = "DELETE FROM "+VENDOR_TABLE+" WHERE id = ?";
+//        conn = this.connect();
+//        try {
+//            PreparedStatement pstmt = conn.prepareStatement(sql);
+//            pstmt.setLong(1, vendor.getId());
+//
+//            pstmt.executeUpdate();
+//            conn.close();
+//            callback.OnSuccess(vendor);
+//        } catch (SQLException e) {
+//            System.out.println(e.getMessage());
+//            callback.OnFailed(e.getMessage());
+//        }
+//    }
 }
 
 

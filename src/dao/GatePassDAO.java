@@ -1,9 +1,12 @@
 package dao;
+import com.sun.corba.se.spi.ior.IdentifiableBase;
+import database.Database;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import model.GatePass;
 import model.GatePassItem;
 import model.Item;
+import utility.DataItemCallback;
 
 public class GatePassDAO {
 
@@ -37,14 +40,26 @@ public class GatePassDAO {
         return gatePasslist;
     }
 
-    public void insert(GatePass material){
-        gatePasslist.add(material);
+    public void insert(GatePass gatePass){
+        Database.getInstance().insertGatePass(gatePass, new DataItemCallback<GatePass>() {
+            @Override
+            public void OnSuccess(GatePass _gatePass) {
+                System.out.println("ID "+_gatePass.getId());
+                gatePasslist.add(_gatePass);
+
+            }
+
+            @Override
+            public void OnFailed(String msg) {
+
+            }
+        });
     }
 
-    public void delete(GatePass material){
+    public void delete(GatePass gatePass){
 
-        if(material!=null)
-            gatePasslist.remove(material);
+        if(gatePass!=null)
+            gatePasslist.remove(gatePass);
 
     }
 

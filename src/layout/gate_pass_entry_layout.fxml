@@ -11,15 +11,15 @@
             <Font name="System Bold" size="21.0" />
         </font>
     </Label>
-   <TableView layoutX="6.0" layoutY="210.0" prefHeight="340.0" prefWidth="787.0">
+   <TableView fx:id="gatePassItemTable" layoutX="6.0" layoutY="210.0" prefHeight="340.0" prefWidth="787.0">
      <columns>
-       <TableColumn prefWidth="41.0" text="Index" />
-       <TableColumn prefWidth="74.0" text="Item Name" />
-         <TableColumn prefWidth="74.0" text="Weight" />
-         <TableColumn prefWidth="74.0" text="Bardana" />
-         <TableColumn prefWidth="74.0" text="Net Weight" />
-         <TableColumn prefWidth="74.0" text="Price" />
-         <TableColumn prefWidth="74.0" text="Delete" />
+       <TableColumn fx:id="indexColumn" prefWidth="60.0" text="Index" />
+       <TableColumn fx:id="nameColumn" prefWidth="103.0" text="Item Name" />
+         <TableColumn fx:id="weightColumn" prefWidth="100.0" text="Weight" />
+         <TableColumn fx:id="bardanaColumn" prefWidth="79.0" text="Bardana" />
+         <TableColumn fx:id="netWeightColumn" text="Net Weight" />
+         <TableColumn fx:id="priceColumn" prefWidth="102.0" text="Price" />
+         <TableColumn fx:id="totalPriceColumn" prefWidth="111.0" text="Total Price" />
      </columns>
    </TableView>
    <Label layoutX="15.0" layoutY="135.0" prefHeight="25.0" prefWidth="150.0" text="Select Item*" />
@@ -28,13 +28,15 @@
    <TextField fx:id="weightEditText" layoutX="175.0" layoutY="160.0" />
    <Label layoutX="335.0" layoutY="135.0" prefHeight="25.0" prefWidth="149.0" text="Bardana" />
    <TextField fx:id="bardanaEditText" layoutX="335.0" layoutY="160.0" />
-    <Label layoutX="495.0" layoutY="135.0" prefHeight="25.0" prefWidth="149.0" text="Price" />
+    <Label layoutX="495.0" layoutY="135.0" prefHeight="25.0" prefWidth="149.0" />
     <TextField fx:id="priceEditText" layoutX="495.0" layoutY="160.0" />
    <Button fx:id="addBtn" layoutX="655.0" layoutY="160.0" mnemonicParsing="false" onAction="#AddButton" prefHeight="25.0" prefWidth="50.0" text="Add" />
-   <Button fx:id="saveBtn" layoutX="652.0" layoutY="553.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="141.0" text="Save Gate Pass" />
+   <Button fx:id="saveBtn" layoutX="652.0" layoutY="553.0" mnemonicParsing="false" onAction="#saveGatePass" prefHeight="40.0" prefWidth="141.0" text="Save Gate Pass" />
    <Button layoutX="746.0" layoutY="5.0" mnemonicParsing="false" onAction="#closeWindow" prefHeight="25.0" prefWidth="50.0" text="X" />
    <DatePicker fx:id="entryDatePicker" layoutX="597.0" layoutY="70.0" />
    <Label layoutX="15.0" layoutY="45.0" prefHeight="25.0" prefWidth="150.0" text="Select Vender*" />
    <ChoiceBox fx:id="vendorChoice" layoutX="14.0" layoutY="70.0" prefWidth="150.0" />
    <Label layoutX="597.0" layoutY="45.0" prefHeight="25.0" prefWidth="150.0" text="Select Date*" />
+   <ToggleButton fx:id="priceToggle" layoutX="495.0" layoutY="132.0" mnemonicParsing="false" onAction="#onPriceToggle" prefHeight="25.0" prefWidth="149.0" text="Price By 1KG" />
+   <Button fx:id="DeleteButton" layoutX="718.0" layoutY="160.0" mnemonicParsing="false" onAction="#deleteItem" prefHeight="25.0" prefWidth="64.0" text="Delete" />
 </Pane>
