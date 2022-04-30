@@ -28,8 +28,7 @@ public class VendorDAO {
        return  instance;
     }
 
-    public Vendor getById(Double id){
-
+    public Vendor getById(long id){
         for (Vendor r:list) {
             if(r.getId()==id){
                 return r;

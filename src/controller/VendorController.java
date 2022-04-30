@@ -54,7 +54,7 @@ public class VendorController implements Initializable {
 
                                 if (!empty) {
                                     HBox box = new HBox(20);
-                                    Label lblName = new Label("\t"+vendor.getId()+" : "+vendor.getName());
+                                    Label lblName = new Label(""+vendor.getId()+" : \t"+vendor.getName()+"\t : "+vendor.getPhone());
                                     Button btn = new Button("x");
                                     Button btnShowStock = new Button("Show Detail");
                                     btn.setOnAction(new EventHandler<ActionEvent>() {
@@ -63,14 +63,7 @@ public class VendorController implements Initializable {
                                             confirmDelete(vendor);
                                         }
                                     });
-                                    btnShowStock.setOnAction(new EventHandler<ActionEvent>() {
-                                        @Override
-                                        public void handle(ActionEvent event) {
-                                            showDetailScreen();
-                                        }
-                                    });
-
-                                    box.getChildren().addAll(btn,btnShowStock,lblName );
+                                    box.getChildren().addAll(btn,lblName );
                                     setGraphic(box);
                                     //setText(value);
                                 } else

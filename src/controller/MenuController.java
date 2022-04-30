@@ -95,14 +95,14 @@ public class MenuController implements Initializable {
         }
     }
     @FXML
-    void OpenWorkerMenu(){
+    void OpenGatePassViewScreen(){
         try {
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("../layout/worker_layout.fxml"));
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("../layout/gate_pass_view.fxml"));
             Parent root1 = (Parent) fxmlLoader.load();
             Stage stage = new Stage();
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.initStyle(StageStyle.UNDECORATED);
-            stage.setTitle("Worker");
+            stage.setTitle("Gate Pass View");
             stage.setScene(new Scene(root1));
             stage.show();
         } catch (IOException e) {

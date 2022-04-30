@@ -3,6 +3,7 @@ package database;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import model.GatePass;
+import model.GatePassItem;
 import model.Item;
 import model.Vendor;
 import utility.Callback;
@@ -17,6 +18,7 @@ public class Database {
     public String ITEM_TABLE = "item";
     public String VENDOR_TABLE = "vendor";
     public String GATE_PASS_TABLE = "gate_pass";
+    public String GATE_PASS_ITEM_TABLE = "gate_pass_item";
 
     public static Database instance;
 
@@ -33,6 +35,7 @@ public class Database {
         createItemTable();
         createVendorTable();
         createGatePassTable();
+        createGatePassItemTable();
     }
 
     public Connection conn;
@@ -102,6 +105,12 @@ public class Database {
             pstmt.setString(1, item.getName());
             pstmt.setBoolean(2, item.isAssemble());
             pstmt.executeUpdate();
+            ResultSet rs = pstmt.getGeneratedKeys();
+            int generatedKey = 0;
+            if (rs.next()) {
+                generatedKey = rs.getInt(1);
+                item.setId(generatedKey);
+            }
             conn.close();
             callback.OnSuccess(item);
         } catch (SQLException e) {
@@ -201,6 +210,12 @@ public class Database {
             pstmt.setString(1, vendor.getName());
            pstmt.setString(2, vendor.getPhone());
             pstmt.executeUpdate();
+            ResultSet rs = pstmt.getGeneratedKeys();
+            int generatedKey = 0;
+            if (rs.next()) {
+                generatedKey = rs.getInt(1);
+                vendor.setId(generatedKey);
+            }
             conn.close();
             callback.OnSuccess(vendor);
         } catch (SQLException e) {
@@ -238,8 +253,36 @@ public class Database {
                 System.out.println(e.toString());
             }
         }
+    }
+    public void getVendorById(long id,DataItemCallback<Vendor> callback) {
+        conn = connect();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        Vendor vendor = null;
+        try {
+            String sql = "SELECT * FROM "+VENDOR_TABLE+" WHERE id ="+id;
+            ps = conn.prepareStatement(sql);
+            rs = ps.executeQuery();
 
+            while(rs.next()) {
+                vendor = new Vendor
+                        (rs.getInt("id"),rs.getString("name"), rs.getString("phone"));
 
+            }
+
+            callback.OnSuccess(vendor);
+        } catch(SQLException e) {
+            callback.OnFailed(e.getMessage());
+            System.out.println(e.toString());
+        } finally {
+            try {
+                rs.close();
+                ps.close();
+                conn.close();
+            } catch(SQLException e) {
+                System.out.println(e.toString());
+            }
+        }
     }
     public void updateVendor(Vendor vendor, DataItemCallback<Vendor> callback){
         String sql = "UPDATE "+VENDOR_TABLE+" SET name=? WHERE id=?";
@@ -378,6 +421,73 @@ public class Database {
 //            callback.OnFailed(e.getMessage());
 //        }
 //    }
+
+
+///GatePassItem Related Code
+    public void createGatePassItemTable(){
+        conn = this.connect();
+        // SQL statement for creating a new table
+        String sql = "CREATE TABLE IF NOT EXISTS \""+GATE_PASS_ITEM_TABLE+"\" (\n" +
+                "\t\"id\"\tINTEGER,\n" +
+                "\t\"gatePassId\"\tINTEGER,\n" +
+                "\t\"itemId\"\tINTEGER,\n" +
+                "\t\"weight\"\tNUMERIC,\n" +
+                "\t\"bardana\"\tNUMERIC,\n" +
+                "\t\"price\"\tNUMERIC,\n" +
+                "\t\"isIn1KG\"\tBLOB,\n" +
+                "\tPRIMARY KEY(\"id\" AUTOINCREMENT)\n" +
+                ");";
+        try{
+            Statement stmt = conn.createStatement();
+            stmt.execute(sql);
+
+            conn.close();
+        } catch (SQLException e) {
+            System.out.println("ERROR "+e.getMessage());
+        }
+    }
+    public void insertGatePassItem(GatePassItem gatePassItem, DataItemCallback callback){
+        String sql = "INSERT INTO "+GATE_PASS_ITEM_TABLE+"(gatePassId,itemId,weight,bardana,price,isIn1KG) VALUES(?,?,?,?,?,?)";
+        conn = this.connect();
+        try {
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setLong(1, gatePassItem.getGatePassId());
+            pstmt.setLong(2, gatePassItem.getItemId());
+            pstmt.setDouble(3, gatePassItem.getWeight());
+            pstmt.setDouble(4, gatePassItem.getBardana());
+            pstmt.setDouble(5, gatePassItem.getPrice());
+            pstmt.setBoolean(6, gatePassItem.isIn1KG());
+            pstmt.executeUpdate();
+            ResultSet rs = pstmt.getGeneratedKeys();
+            int generatedKey = 0;
+            if (rs.next()) {
+                generatedKey = rs.getInt(1);
+                gatePassItem.setId(generatedKey);
+            }
+            conn.close();
+            //get next key
+            callback.OnSuccess(gatePassItem);
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            callback.OnFailed(e.getMessage());
+
+        }
+    }
+    public void deleteGatePassItems(GatePassItem item, DataItemCallback callback){
+        String sql = "DELETE FROM "+GATE_PASS_ITEM_TABLE+" WHERE gatePassId = ?";
+        conn = this.connect();
+        try {
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setLong(1, item.getId());
+
+            pstmt.executeUpdate();
+            conn.close();
+            callback.OnSuccess(item);
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            callback.OnFailed(e.getMessage());
+        }
+    }
 }
 
 

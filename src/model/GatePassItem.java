@@ -5,9 +5,6 @@ public class GatePassItem {
         return id;
     }
 
-    public long getGatepassID() {
-        return gatepassID;
-    }
 
     public long getItemIndex() {
         return itemId;
@@ -54,7 +51,18 @@ public class GatePassItem {
 
     }
 
-    private long id,gatepassID,itemId;
+    private long id;
+
+    public long getGatePassId() {
+        return gatePassId;
+    }
+
+    public void setGatePassId(long gatePassId) {
+        this.gatePassId = gatePassId;
+    }
+
+    private long gatePassId;
+    private long itemId;
 
     public long getItemId() {
         return itemId;
@@ -67,4 +75,8 @@ public class GatePassItem {
 
     private double weight,bardana,price,netWeight,totalPrice;
     private boolean isIn1KG;
+
+    public void setId(long id) {
+        this.id = id;
+    }
 }

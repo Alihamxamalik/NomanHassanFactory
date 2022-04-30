@@ -26,4 +26,8 @@ public class Item {
         this.name = name;
         this.assemble = assemble;
     }
+
+    public void setId(long id) {
+        this.id = id;
+    }
 }

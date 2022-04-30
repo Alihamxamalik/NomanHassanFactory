@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720" prefWidth="1280" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.GatePassViewController">
+   <children>
+      <Label alignment="CENTER" layoutX="1.0" layoutY="1.0" prefHeight="40.0" prefWidth="245.0" text="Gate Pass View" textAlignment="JUSTIFY">
+         <font>
+            <Font name="System Bold" size="21.0" />
+         </font>
+      </Label>
+      <TextField layoutX="584.0" layoutY="66.0" />
+      <Label layoutX="584.0" layoutY="41.0" prefHeight="17.0" prefWidth="149.0" text="Gate Pass ID" />
+      <Button fx:id="findGatePassButton" layoutX="733.0" layoutY="66.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="51.0" text="Find" />
+      <ComboBox fx:id="vendorChoiceBox" layoutX="811.0" layoutY="66.0" prefWidth="150.0" />
+      <DatePicker fx:id="datePicker" layoutX="973.0" layoutY="66.0" />
+      <Button fx:id="clearFieldsButton" layoutX="1226.0" layoutY="66.0" mnemonicParsing="false" text="Clear" />
+      <Button fx:id="searchButton" layoutX="1167.0" layoutY="66.0" mnemonicParsing="false" text="Search" />
+      <TableView fx:id="gatePassTable" layoutY="91.0" prefHeight="632.0" prefWidth="1280.0">
+        <columns>
+          <TableColumn fx:id="gatePassId" prefWidth="112.0" text="ID" />
+          <TableColumn fx:id="vendorColumn" minWidth="0.0" prefWidth="470.0" text="Vendor" />
+            <TableColumn fx:id="dateColumn" prefWidth="341.0" text="Date" />
+            <TableColumn fx:id="actionColumn" prefWidth="356.0" text="Action" />
+        </columns>
+      </TableView>
+      <Label layoutX="811.0" layoutY="41.0" prefHeight="17.0" prefWidth="149.0" text="Vendor" />
+      <Label layoutX="973.0" layoutY="41.0" prefHeight="17.0" prefWidth="174.0" text="Date" />
+      <Button layoutX="8.0" layoutY="66.0" mnemonicParsing="false" text="Delete Gate Pass" />
+      <Button layoutX="1237.0" mnemonicParsing="false" onAction="#closeWindow" prefHeight="34.0" prefWidth="43.0" text="X" />
+<!--      <Button fx:id="productButton" layoutX="15.0" layoutY="443.0" mnemonicParsing="false" onMouseClicked="#OpenProductMenu" prefHeight="40.0" prefWidth="200.0" text="Product" />-->
+<!--      <Button layoutX="15" layoutY="225.0" mnemonicParsing="false" onMouseClicked="#OpenWorkerMenu" prefHeight="40.0" prefWidth="200.0" text="Worker" />-->
+<!--      <Button layoutX="15" layoutY="300.0" mnemonicParsing="false" onMouseClicked="#OpenRecipeMenu" prefHeight="40.0" prefWidth="200.0" text="Recipe (Mael)" />-->
+<!--      <Button layoutX="15" layoutY="375.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="200.0" text="Shift" />-->
+   </children>
+</Pane>
