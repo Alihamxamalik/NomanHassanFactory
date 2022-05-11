@@ -28,10 +28,12 @@ public class Database {
             instance = new Database();
         return instance;
     }
-    public Database(){
+
+    public Database() {
         createTable();
     }
-    public void createTable(){
+
+    public void createTable() {
         createItemTable();
         createVendorTable();
         createGatePassTable();
@@ -40,6 +42,7 @@ public class Database {
 
     public Connection conn;
     String url = "jdbc:sqlite:C:/sqlite/db/NHDB.db";
+
     public Connection getConnection() {
         String databaseName = "";
         String databaseUser = "";
@@ -69,6 +72,7 @@ public class Database {
         return null;
 
     }
+
     private Connection connect() {
         Connection conn = null;
         try {
@@ -80,25 +84,26 @@ public class Database {
     }
 
     ///Items Related Code
-    public void createItemTable(){
+    public void createItemTable() {
         conn = this.connect();
         // SQL statement for creating a new table
-        String sql = "CREATE TABLE IF NOT EXISTS \""+ITEM_TABLE+"\" (\n" +
+        String sql = "CREATE TABLE IF NOT EXISTS \"" + ITEM_TABLE + "\" (\n" +
                 "\t\"id\"\tINTEGER NOT NULL,\n" +
                 "\t\"name\"\tTEXT NOT NULL,\n" +
                 "\t\"assemble\"\tBLOB,\n" +
                 "\tPRIMARY KEY(\"id\" AUTOINCREMENT)\n" +
                 ");";
-        try{
+        try {
             Statement stmt = conn.createStatement();
             stmt.execute(sql);
             conn.close();
         } catch (SQLException e) {
-            System.out.println("ERROR "+e.getMessage());
+            System.out.println("ERROR " + e.getMessage());
         }
     }
-    public void insertItem(Item item, DataItemCallback callback){
-        String sql = "INSERT INTO "+ITEM_TABLE+"(name,assemble) VALUES(?,?)";
+
+    public void insertItem(Item item, DataItemCallback callback) {
+        String sql = "INSERT INTO " + ITEM_TABLE + "(name,assemble) VALUES(?,?)";
         conn = this.connect();
         try {
             PreparedStatement pstmt = conn.prepareStatement(sql);
@@ -119,23 +124,24 @@ public class Database {
 
         }
     }
+
     public void getAllItem(DataListCallback<Item> callback) {
         conn = connect();
         PreparedStatement ps = null;
         ResultSet rs = null;
         ObservableList<Item> _list = FXCollections.observableArrayList();
         try {
-            String sql = "SELECT * FROM "+ITEM_TABLE;
+            String sql = "SELECT * FROM " + ITEM_TABLE;
             ps = conn.prepareStatement(sql);
             rs = ps.executeQuery();
             System.out.println("ALL USERS\n");
-            while(rs.next()) {
-                Item item = new Item(rs.getInt("id"),rs.getString("name"),rs.getBoolean("assemble"));
+            while (rs.next()) {
+                Item item = new Item(rs.getInt("id"), rs.getString("name"), rs.getBoolean("assemble"));
                 _list.add(item);
             }
 
             callback.OnSuccess(_list);
-        } catch(SQLException e) {
+        } catch (SQLException e) {
             callback.OnFailed(e.getMessage());
             System.out.println(e.toString());
         } finally {
@@ -143,21 +149,22 @@ public class Database {
                 rs.close();
                 ps.close();
                 conn.close();
-            } catch(SQLException e) {
+            } catch (SQLException e) {
                 System.out.println(e.toString());
             }
         }
 
 
     }
-    public void updateItem(Item item, DataItemCallback<Item> callback){
-        String sql = "UPDATE "+ITEM_TABLE+" SET name=?,assemble=? WHERE id=?";
+
+    public void updateItem(Item item, DataItemCallback<Item> callback) {
+        String sql = "UPDATE " + ITEM_TABLE + " SET name=?,assemble=? WHERE id=?";
         conn = this.connect();
         try {
             PreparedStatement pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, item.getName());
             pstmt.setBoolean(2, item.isAssemble());
-            pstmt.setLong(3, (int)item.getId());
+            pstmt.setLong(3, (int) item.getId());
             pstmt.executeUpdate();
             conn.close();
             callback.OnSuccess(item);
@@ -167,8 +174,9 @@ public class Database {
 
         }
     }
-    public void deleteItem(Item item, DataItemCallback callback){
-        String sql = "DELETE FROM "+ITEM_TABLE+" WHERE id = ?";
+
+    public void deleteItem(Item item, DataItemCallback callback) {
+        String sql = "DELETE FROM " + ITEM_TABLE + " WHERE id = ?";
         conn = this.connect();
         try {
             PreparedStatement pstmt = conn.prepareStatement(sql);
@@ -185,30 +193,31 @@ public class Database {
 
 
     ///Vendor Related Code
-    public void createVendorTable(){
+    public void createVendorTable() {
         conn = this.connect();
         // SQL statement for creating a new table
-        String sql = "CREATE TABLE IF NOT EXISTS \""+VENDOR_TABLE+"\" (\n" +
+        String sql = "CREATE TABLE IF NOT EXISTS \"" + VENDOR_TABLE + "\" (\n" +
                 "\t\"id\"\tINTEGER NOT NULL,\n" +
                 "\t\"name\"\tTEXT NOT NULL,\n" +
                 "\t\"phone\"\tTEXT NOT NULL,\n" +
                 "\tPRIMARY KEY(\"id\" AUTOINCREMENT)\n" +
                 ");";
-        try{
+        try {
             Statement stmt = conn.createStatement();
             stmt.execute(sql);
             conn.close();
         } catch (SQLException e) {
-            System.out.println("ERROR "+e.getMessage());
+            System.out.println("ERROR " + e.getMessage());
         }
     }
-    public void insertVendor(Vendor vendor, DataItemCallback callback){
-        String sql = "INSERT INTO "+VENDOR_TABLE+"(name,phone) VALUES(?,?)";
+
+    public void insertVendor(Vendor vendor, DataItemCallback callback) {
+        String sql = "INSERT INTO " + VENDOR_TABLE + "(name,phone) VALUES(?,?)";
         conn = this.connect();
         try {
             PreparedStatement pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, vendor.getName());
-           pstmt.setString(2, vendor.getPhone());
+            pstmt.setString(2, vendor.getPhone());
             pstmt.executeUpdate();
             ResultSet rs = pstmt.getGeneratedKeys();
             int generatedKey = 0;
@@ -224,24 +233,25 @@ public class Database {
 
         }
     }
+
     public void getAllVendor(DataListCallback<Vendor> callback) {
         conn = connect();
         PreparedStatement ps = null;
         ResultSet rs = null;
         ObservableList<Vendor> _list = FXCollections.observableArrayList();
         try {
-            String sql = "SELECT * FROM "+VENDOR_TABLE;
+            String sql = "SELECT * FROM " + VENDOR_TABLE;
             ps = conn.prepareStatement(sql);
             rs = ps.executeQuery();
 
-            while(rs.next()) {
+            while (rs.next()) {
                 Vendor vendor = new Vendor
-                        (rs.getInt("id"),rs.getString("name"), rs.getString("phone"));
+                        (rs.getInt("id"), rs.getString("name"), rs.getString("phone"));
                 _list.add(vendor);
             }
 
             callback.OnSuccess(_list);
-        } catch(SQLException e) {
+        } catch (SQLException e) {
             callback.OnFailed(e.getMessage());
             System.out.println(e.toString());
         } finally {
@@ -249,29 +259,30 @@ public class Database {
                 rs.close();
                 ps.close();
                 conn.close();
-            } catch(SQLException e) {
+            } catch (SQLException e) {
                 System.out.println(e.toString());
             }
         }
     }
-    public void getVendorById(long id,DataItemCallback<Vendor> callback) {
+
+    public void getVendorById(long id, DataItemCallback<Vendor> callback) {
         conn = connect();
         PreparedStatement ps = null;
         ResultSet rs = null;
         Vendor vendor = null;
         try {
-            String sql = "SELECT * FROM "+VENDOR_TABLE+" WHERE id ="+id;
+            String sql = "SELECT * FROM " + VENDOR_TABLE + " WHERE id =" + id;
             ps = conn.prepareStatement(sql);
             rs = ps.executeQuery();
 
-            while(rs.next()) {
+            while (rs.next()) {
                 vendor = new Vendor
-                        (rs.getInt("id"),rs.getString("name"), rs.getString("phone"));
+                        (rs.getInt("id"), rs.getString("name"), rs.getString("phone"));
 
             }
 
             callback.OnSuccess(vendor);
-        } catch(SQLException e) {
+        } catch (SQLException e) {
             callback.OnFailed(e.getMessage());
             System.out.println(e.toString());
         } finally {
@@ -279,18 +290,19 @@ public class Database {
                 rs.close();
                 ps.close();
                 conn.close();
-            } catch(SQLException e) {
+            } catch (SQLException e) {
                 System.out.println(e.toString());
             }
         }
     }
-    public void updateVendor(Vendor vendor, DataItemCallback<Vendor> callback){
-        String sql = "UPDATE "+VENDOR_TABLE+" SET name=? WHERE id=?";
+
+    public void updateVendor(Vendor vendor, DataItemCallback<Vendor> callback) {
+        String sql = "UPDATE " + VENDOR_TABLE + " SET name=? WHERE id=?";
         conn = this.connect();
         try {
             PreparedStatement pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, vendor.getName());
-            pstmt.setLong(2, (int)vendor.getId());
+            pstmt.setLong(2, (int) vendor.getId());
             pstmt.executeUpdate();
             conn.close();
             callback.OnSuccess(vendor);
@@ -300,8 +312,9 @@ public class Database {
 
         }
     }
-    public void deleteVendor(Vendor vendor, DataItemCallback callback){
-        String sql = "DELETE FROM "+VENDOR_TABLE+" WHERE id = ?";
+
+    public void deleteVendor(Vendor vendor, DataItemCallback callback) {
+        String sql = "DELETE FROM " + VENDOR_TABLE + " WHERE id = ?";
         conn = this.connect();
         try {
             PreparedStatement pstmt = conn.prepareStatement(sql);
@@ -317,25 +330,26 @@ public class Database {
     }
 
     //GatePass Related Code
-    public void createGatePassTable(){
+    public void createGatePassTable() {
         conn = this.connect();
         // SQL statement for creating a new table
-        String sql = "CREATE TABLE IF NOT EXISTS \""+GATE_PASS_TABLE+"\" (\n" +
+        String sql = "CREATE TABLE IF NOT EXISTS \"" + GATE_PASS_TABLE + "\" (\n" +
                 "\t\"id\"\tINTEGER NOT NULL,\n" +
                 "\t\"vendorId\"\tINTEGER NOT NULL,\n" +
                 "\t\"date\"\tTEXT NOT NULL,\n" +
                 "\tPRIMARY KEY(\"id\" AUTOINCREMENT)\n" +
                 ");";
-        try{
+        try {
             Statement stmt = conn.createStatement();
             stmt.execute(sql);
             conn.close();
         } catch (SQLException e) {
-            System.out.println("ERROR "+e.getMessage());
+            System.out.println("ERROR " + e.getMessage());
         }
     }
-    public void insertGatePass(GatePass gatePass, DataItemCallback callback){
-        String sql = "INSERT INTO "+GATE_PASS_TABLE+"(vendorId,date) VALUES(?,?)";
+
+    public void insertGatePass(GatePass gatePass, DataItemCallback<GatePass> callback) {
+        String sql = "INSERT INTO " + GATE_PASS_TABLE + "(vendorId,date) VALUES(?,?)";
         conn = this.connect();
         try {
             PreparedStatement pstmt = conn.prepareStatement(sql);
@@ -358,24 +372,25 @@ public class Database {
 
         }
     }
+
     public void getAllGatePass(DataListCallback<GatePass> callback) {
         conn = connect();
         PreparedStatement ps = null;
         ResultSet rs = null;
         ObservableList<GatePass> _list = FXCollections.observableArrayList();
         try {
-            String sql = "SELECT * FROM "+GATE_PASS_TABLE;
+            String sql = "SELECT * FROM " + GATE_PASS_TABLE;
             ps = conn.prepareStatement(sql);
             rs = ps.executeQuery();
 
-            while(rs.next()) {
+            while (rs.next()) {
                 GatePass gatePass = new GatePass
-                        (rs.getInt("id"),rs.getInt("vendorId"), rs.getString("date"));
+                        (rs.getInt("id"), rs.getInt("vendorId"), rs.getString("date"));
                 _list.add(gatePass);
             }
 
             callback.OnSuccess(_list);
-        } catch(SQLException e) {
+        } catch (SQLException e) {
             callback.OnFailed(e.getMessage());
             System.out.println(e.toString());
         } finally {
@@ -383,51 +398,71 @@ public class Database {
                 rs.close();
                 ps.close();
                 conn.close();
-            } catch(SQLException e) {
+            } catch (SQLException e) {
                 System.out.println(e.toString());
             }
         }
 
 
     }
-//    public void updateGatePass(GatePass gatePass, DataItemCallback<GatePass> callback){
-//        String sql = "UPDATE "+GATE_PASS_TABLE+" SET name=? WHERE id=?";
-//        conn = this.connect();
-//        try {
-//            PreparedStatement pstmt = conn.prepareStatement(sql);
-//            pstmt.setString(1, vendor.getName());
-//            pstmt.setLong(2, (int)vendor.getId());
-//            pstmt.executeUpdate();
-//            conn.close();
-//            callback.OnSuccess(vendor);
-//        } catch (SQLException e) {
-//            System.out.println(e.getMessage());
-//            callback.OnFailed(e.getMessage());
-//
-//        }
-//    }
-//    public void deleteGatePass(Vendor vendor, DataItemCallback callback){
-//        String sql = "DELETE FROM "+VENDOR_TABLE+" WHERE id = ?";
-//        conn = this.connect();
-//        try {
-//            PreparedStatement pstmt = conn.prepareStatement(sql);
-//            pstmt.setLong(1, vendor.getId());
-//
-//            pstmt.executeUpdate();
-//            conn.close();
-//            callback.OnSuccess(vendor);
-//        } catch (SQLException e) {
-//            System.out.println(e.getMessage());
-//            callback.OnFailed(e.getMessage());
-//        }
-//    }
 
+    public GatePass getGatePassById(long id) {
+        conn = connect();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        GatePass gatePass = null;
+        try {
+            String sql = "SELECT * FROM " + GATE_PASS_TABLE + " WHERE id = " + id;
+            ps = conn.prepareStatement(sql);
+            rs = ps.executeQuery();
 
-///GatePassItem Related Code
-    public void createGatePassItemTable(){
+            while (rs.next()) {
+                gatePass = new GatePass
+                        (rs.getInt("id"), rs.getInt("vendorId"), rs.getString("date"));
+            }
+
+        } catch (SQLException e) {
+
+            System.out.println(e.toString());
+        } finally {
+            try {
+                rs.close();
+                ps.close();
+                conn.close();
+            } catch (SQLException e) {
+                System.out.println(e.toString());
+            }
+        }
+        return gatePass;
+
+    }
+
+    public void updateGatePass(GatePass gatePass,DataItemCallback<GatePass> callback){
+        System.out.println("Update");
+        String sql = "UPDATE " + GATE_PASS_TABLE + " SET vendorId=? , date=? WHERE id=?";
+        conn = this.connect();
+        try {
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setLong(1, gatePass.getVendorId());
+            pstmt.setString(2, gatePass.getDate());
+            pstmt.setLong(3, gatePass.getId());
+            pstmt.executeUpdate();
+
+            conn.close();
+
+            callback.OnSuccess(gatePass);
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            callback.OnFailed(e.getMessage());
+
+        }
+    }
+
+    ///GatePassItem Related Code
+    public void createGatePassItemTable() {
         conn = this.connect();
         // SQL statement for creating a new table
-        String sql = "CREATE TABLE IF NOT EXISTS \""+GATE_PASS_ITEM_TABLE+"\" (\n" +
+        String sql = "CREATE TABLE IF NOT EXISTS \"" + GATE_PASS_ITEM_TABLE + "\" (\n" +
                 "\t\"id\"\tINTEGER,\n" +
                 "\t\"gatePassId\"\tINTEGER,\n" +
                 "\t\"itemId\"\tINTEGER,\n" +
@@ -437,17 +472,18 @@ public class Database {
                 "\t\"isIn1KG\"\tBLOB,\n" +
                 "\tPRIMARY KEY(\"id\" AUTOINCREMENT)\n" +
                 ");";
-        try{
+        try {
             Statement stmt = conn.createStatement();
             stmt.execute(sql);
 
             conn.close();
         } catch (SQLException e) {
-            System.out.println("ERROR "+e.getMessage());
+            System.out.println("ERROR " + e.getMessage());
         }
     }
-    public void insertGatePassItem(GatePassItem gatePassItem, DataItemCallback callback){
-        String sql = "INSERT INTO "+GATE_PASS_ITEM_TABLE+"(gatePassId,itemId,weight,bardana,price,isIn1KG) VALUES(?,?,?,?,?,?)";
+
+    public void insertGatePassItem(GatePassItem gatePassItem, DataItemCallback callback) {
+        String sql = "INSERT INTO " + GATE_PASS_ITEM_TABLE + "(gatePassId,itemId,weight,bardana,price,isIn1KG) VALUES(?,?,?,?,?,?)";
         conn = this.connect();
         try {
             PreparedStatement pstmt = conn.prepareStatement(sql);
@@ -473,21 +509,58 @@ public class Database {
 
         }
     }
-    public void deleteGatePassItems(GatePassItem item, DataItemCallback callback){
-        String sql = "DELETE FROM "+GATE_PASS_ITEM_TABLE+" WHERE gatePassId = ?";
+
+    public void deleteGatePassItems(long gatePassId) {
+        String sql = "DELETE FROM " + GATE_PASS_ITEM_TABLE + " WHERE gatePassId = ?";
         conn = this.connect();
         try {
             PreparedStatement pstmt = conn.prepareStatement(sql);
-            pstmt.setLong(1, item.getId());
+            pstmt.setLong(1, gatePassId);
 
             pstmt.executeUpdate();
             conn.close();
-            callback.OnSuccess(item);
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-            callback.OnFailed(e.getMessage());
         }
     }
+    public void getGatePassItemList(long gatePassId,DataListCallback<GatePassItem> callback) {
+        conn = connect();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        ObservableList<GatePassItem> _list = FXCollections.observableArrayList();
+        try {
+            String sql = "SELECT * FROM " + GATE_PASS_ITEM_TABLE+" WHERE gatePassId = "+gatePassId;
+            ps = conn.prepareStatement(sql);
+            rs = ps.executeQuery();
+
+            while (rs.next()) {
+                GatePassItem item = new GatePassItem(
+                        rs.getLong("itemId"),
+                        rs.getDouble("weight"),
+                        rs.getDouble("bardana"),
+                        rs.getDouble("bardana"),
+                        rs.getBoolean("isIn1KG")
+                );
+                _list.add(item);
+            }
+
+            callback.OnSuccess(_list);
+        } catch (SQLException e) {
+            callback.OnFailed(e.getMessage());
+            System.out.println(e.toString());
+        } finally {
+            try {
+                rs.close();
+                ps.close();
+                conn.close();
+            } catch (SQLException e) {
+                System.out.println(e.toString());
+            }
+        }
+
+
+    }
+
 }
 
 

@@ -22,6 +22,7 @@ public class GatePassDAO {
     }
 
     public static GatePassDAO instance;
+    public GatePass currentGatePass;
 
     public static GatePassDAO getInstance() {
         if (instance == null)
@@ -29,14 +30,23 @@ public class GatePassDAO {
         return instance;
     }
 
-    public GatePass getById(int id) {
+    public GatePass getById(long id) {
+//
+//        for (GatePass r : gatePasslist) {
+//            if (r.getId() == id) {
+//                return r;
+//            }
+//        }
+        return Database.getInstance().getGatePassById(id);
+    }
 
-        for (GatePass r : gatePasslist) {
-            if (r.getId() == id) {
-                return r;
-            }
-        }
-        return null;
+    public void setCurrentGatePass(long id) {
+        currentGatePass = getById(id);
+    }
+
+    public void setCurrentGatePassNull() {
+
+        currentGatePass = null;
     }
 
     public GatePass getByListIndex(int index) {
@@ -74,6 +84,34 @@ public class GatePassDAO {
         });
     }
 
+    public void update(GatePass gatePass, ObservableList<GatePassItem> itemList, DataItemCallback<GatePass> callback) {
+
+        Database.getInstance().deleteGatePassItems(gatePass.getId());
+        Database.getInstance().updateGatePass(gatePass, new DataItemCallback<GatePass>() {
+            @Override
+            public void OnSuccess(GatePass _gatePass) {
+                insertGatePassItemList(itemList, _gatePass.getId(), new Callback() {
+                    @Override
+                    public void OnSuccess() {
+                        callback.OnSuccess(_gatePass);
+                    }
+
+                    @Override
+                    public void OnFailed(String msg) {
+                        callback.OnFailed(msg);
+                    }
+                });
+            }
+
+            @Override
+            public void OnFailed(String msg) {
+                callback.OnFailed(msg);
+            }
+        });
+
+
+    }
+
     public void insertGatePassItemList(ObservableList<GatePassItem> list, long gatePassId, Callback callback) {
 
         for (GatePassItem item : list) {
@@ -86,25 +124,30 @@ public class GatePassDAO {
 
                 @Override
                 public void OnFailed(String msg) {
-                    Database.getInstance().deleteGatePassItems(item, new DataItemCallback<GatePassItem>() {
-                        @Override
-                        public void OnSuccess(GatePassItem _item) {
-                            callback.OnFailed(msg);
-
-                        }
-
-                        @Override
-                        public void OnFailed(String msg) {
-                            callback.OnFailed(msg);
-
-                        }
-                    });
+                    Database.getInstance().deleteGatePassItems(item.getGatePassId());
                     return;
                 }
             });
         }
         callback.OnSuccess();
     }
+
+    public void getGatePassItemListById(long gatePassId, DataListCallback<GatePassItem> callback) {
+
+        Database.getInstance().getGatePassItemList(gatePassId, new DataListCallback<GatePassItem>() {
+            @Override
+            public void OnSuccess(ObservableList<GatePassItem> list) {
+                callback.OnSuccess(list);
+            }
+
+            @Override
+            public void OnFailed(String msg) {
+                callback.OnFailed(msg);
+            }
+        });
+
+    }
+
 
     public void delete(GatePass gatePass) {
 

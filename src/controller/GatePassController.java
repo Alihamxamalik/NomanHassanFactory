@@ -23,6 +23,8 @@ import utility.DataListCallback;
 
 import java.net.URL;
 import java.sql.SQLOutput;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ResourceBundle;
 
 public class GatePassController implements Initializable {
@@ -42,13 +44,13 @@ public class GatePassController implements Initializable {
     @FXML
     ToggleButton priceToggle;
     ObservableList gatePassItemList;
-    GatePass gatePass;
-
     @FXML
     TableView<GatePassItem> gatePassItemTable;
     @FXML
     TableColumn<GatePassItem, String>
             indexColumn, nameColumn, weightColumn, bardanaColumn, netWeightColumn, priceColumn, totalPriceColumn;
+
+    GatePass currentGatePass;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -57,6 +59,63 @@ public class GatePassController implements Initializable {
         gatePassItemList = FXCollections.observableArrayList();
         initGatePassItemTable();
         onPriceToggle();
+        currentGatePass = GatePassDAO.getInstance().currentGatePass;
+        if (currentGatePass != null) {
+            System.out.println("Not Null");
+            setCurrentGatePassView();
+        }
+    }
+
+    void setCurrentGatePassView() {
+
+        //Set Vendor
+        VendorDAO.getInstance().getAll(new DataListCallback<Vendor>() {
+            @Override
+            public void OnSuccess(ObservableList<Vendor> list) {
+
+                for (int vendorIndex=0;vendorIndex<list.size();vendorIndex++) {
+                    if(list.get(vendorIndex).getId()==currentGatePass.getVendorId()){
+                        vendorChoice.getSelectionModel().select(vendorIndex);
+                    }
+                }
+            }
+
+            @Override
+            public void OnFailed(String msg) {
+
+            }
+        });
+        //Set Date
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate localDate = LocalDate.parse(currentGatePass.getDate(), formatter);
+        entryDatePicker.setValue(localDate);
+        // Set Items
+
+        GatePassDAO.getInstance().getGatePassItemListById(currentGatePass.getId(), new DataListCallback<GatePassItem>() {
+            @Override
+            public void OnSuccess(ObservableList<GatePassItem> list) {
+                for (GatePassItem item:list) {
+                    gatePassItemList.add(item);
+                }
+                gatePassItemTable.refresh();
+            }
+            @Override
+            public void OnFailed(String msg) {
+                UtilityClass.getInstance().showErrorPopup(msg, new ActionCallback() {
+                    @Override
+                    public void OnAction() {
+                        closeWindow();
+                    }
+
+                    @Override
+                    public void OnCancel() {
+                        closeWindow();
+                    }
+                });
+            }
+        });
+
+
     }
 
     @FXML
@@ -124,10 +183,10 @@ public class GatePassController implements Initializable {
         }
 
         int vendorIndex = vendorChoice.getSelectionModel().getSelectedIndex();
-        if (gatePass == null) {
-            gatePass = new GatePass
+        if (currentGatePass == null) {
+            currentGatePass = new GatePass
                     (VendorDAO.getInstance().getByListIndex(vendorIndex).getId(), entryDatePicker.getValue().toString());
-            GatePassDAO.getInstance().insert(gatePass, new DataItemCallback<GatePass>() {
+            GatePassDAO.getInstance().insert(currentGatePass, new DataItemCallback<GatePass>() {
                 @Override
                 public void OnSuccess(GatePass gatePass) {
 
@@ -173,6 +232,28 @@ public class GatePassController implements Initializable {
             });
         } else {
 
+            GatePassDAO.getInstance().update(currentGatePass, gatePassItemList, new DataItemCallback<GatePass>() {
+                @Override
+                public void OnSuccess(GatePass gatePass) {
+                    clearScreen();
+                    UtilityClass.getInstance().showAlert("GatePass Save Successfully");
+                }
+
+                @Override
+                public void OnFailed(String msg) {
+                    UtilityClass.getInstance().showErrorPopup(msg, new ActionCallback() {
+                        @Override
+                        public void OnAction() {
+                            closeWindow();
+                        }
+
+                        @Override
+                        public void OnCancel() {
+                            closeWindow();
+                        }
+                    });
+                }
+            });
 
         }
 
@@ -198,8 +279,8 @@ public class GatePassController implements Initializable {
 
     @FXML
     private void closeWindow() {
+        GatePassDAO.getInstance().setCurrentGatePassNull();
         Stage stage = (Stage) itemChoice.getScene().getWindow();
-        // do what you have to do
         stage.close();
     }
 

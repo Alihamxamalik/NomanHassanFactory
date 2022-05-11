@@ -1,5 +1,6 @@
 package controller;
 
+import dao.GatePassDAO;
 import database.Database;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -81,6 +82,7 @@ public class MenuController implements Initializable {
     }
     @FXML
     void OpenGatePassScreen(){
+        GatePassDAO.getInstance().setCurrentGatePassNull();
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("../layout/gate_pass_entry_layout.fxml"));
             Parent root1 = (Parent) fxmlLoader.load();
