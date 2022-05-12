@@ -7,6 +7,8 @@ import model.Vendor;
 import utility.DataItemCallback;
 import utility.DataListCallback;
 
+import javax.xml.crypto.Data;
+
 public class VendorDAO {
 
     private static ObservableList<Vendor> list;
@@ -29,12 +31,12 @@ public class VendorDAO {
     }
 
     public Vendor getById(long id){
-        for (Vendor r:list) {
-            if(r.getId()==id){
-                return r;
-            }
-        }
-        return null;
+//        for (Vendor r:list) {
+//            if(r.getId()==id){
+//                return r;
+//            }
+//        }
+        return Database.getInstance().getVendorById(id);
     }
 
     public Vendor getByListIndex(int index){

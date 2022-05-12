@@ -11,13 +11,13 @@
             <Font name="System Bold" size="21.0" />
          </font>
       </Label>
-      <TextField layoutX="584.0" layoutY="66.0" />
+      <TextField fx:id="txtGatePassId" layoutX="584.0" layoutY="66.0" />
       <Label layoutX="584.0" layoutY="41.0" prefHeight="17.0" prefWidth="149.0" text="Gate Pass ID" />
-      <Button fx:id="findGatePassButton" layoutX="733.0" layoutY="66.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="51.0" text="Find" />
-      <ComboBox fx:id="vendorChoiceBox" layoutX="811.0" layoutY="66.0" prefWidth="150.0" />
+      <Button fx:id="findGatePassButton" layoutX="733.0" layoutY="66.0" mnemonicParsing="false" onAction="#findGatePassById" prefHeight="25.0" prefWidth="51.0" text="Find" />
+      <ComboBox fx:id="vendorChoice" layoutX="811.0" layoutY="66.0" prefWidth="150.0" />
       <DatePicker fx:id="datePicker" layoutX="973.0" layoutY="66.0" />
-      <Button fx:id="clearFieldsButton" layoutX="1226.0" layoutY="66.0" mnemonicParsing="false" text="Clear" />
-      <Button fx:id="searchButton" layoutX="1167.0" layoutY="66.0" mnemonicParsing="false" text="Search" />
+      <Button fx:id="clearFieldsButton" layoutX="1222.0" layoutY="66.0" mnemonicParsing="false" onAction="#refresh" text="Refresh" />
+      <Button fx:id="searchButton" layoutX="1163.0" layoutY="66.0" mnemonicParsing="false" onAction="#searchGatePass" text="Search" />
       <TableView fx:id="gatePassTable" layoutY="91.0" prefHeight="632.0" prefWidth="1280.0">
         <columns>
           <TableColumn fx:id="gatePassId" prefWidth="112.0" text="ID" />

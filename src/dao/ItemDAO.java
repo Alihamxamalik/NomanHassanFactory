@@ -42,7 +42,7 @@ public class ItemDAO {
                 return r;
             }
         }
-        return null;
+        return Database.getInstance().getItemById(id);
     }
 
     public Item getByListIndex(int index) {

@@ -157,6 +157,35 @@ public class Database {
 
     }
 
+    public Item getItemById(long id) {
+        conn = connect();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        Item item = null;
+        try {
+            String sql = "SELECT * FROM " + ITEM_TABLE + " WHERE id = " + id;
+            ps = conn.prepareStatement(sql);
+            rs = ps.executeQuery();
+
+            while (rs.next()) {
+                item = new Item(rs.getInt("id"),rs.getString("name"),rs.getBoolean("assemble"));
+            }
+
+        } catch (SQLException e) {
+
+            System.out.println(e.toString());
+        } finally {
+            try {
+                rs.close();
+                ps.close();
+                conn.close();
+            } catch (SQLException e) {
+                System.out.println(e.toString());
+            }
+        }
+        return item;
+
+    }
     public void updateItem(Item item, DataItemCallback<Item> callback) {
         String sql = "UPDATE " + ITEM_TABLE + " SET name=?,assemble=? WHERE id=?";
         conn = this.connect();
@@ -264,38 +293,6 @@ public class Database {
             }
         }
     }
-
-    public void getVendorById(long id, DataItemCallback<Vendor> callback) {
-        conn = connect();
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-        Vendor vendor = null;
-        try {
-            String sql = "SELECT * FROM " + VENDOR_TABLE + " WHERE id =" + id;
-            ps = conn.prepareStatement(sql);
-            rs = ps.executeQuery();
-
-            while (rs.next()) {
-                vendor = new Vendor
-                        (rs.getInt("id"), rs.getString("name"), rs.getString("phone"));
-
-            }
-
-            callback.OnSuccess(vendor);
-        } catch (SQLException e) {
-            callback.OnFailed(e.getMessage());
-            System.out.println(e.toString());
-        } finally {
-            try {
-                rs.close();
-                ps.close();
-                conn.close();
-            } catch (SQLException e) {
-                System.out.println(e.toString());
-            }
-        }
-    }
-
     public void updateVendor(Vendor vendor, DataItemCallback<Vendor> callback) {
         String sql = "UPDATE " + VENDOR_TABLE + " SET name=? WHERE id=?";
         conn = this.connect();
@@ -329,6 +326,35 @@ public class Database {
         }
     }
 
+    public Vendor getVendorById(long id) {
+        conn = connect();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        Vendor vendor = null;
+        try {
+            String sql = "SELECT * FROM " + VENDOR_TABLE + " WHERE id = " + id;
+            ps = conn.prepareStatement(sql);
+            rs = ps.executeQuery();
+
+            while (rs.next()) {
+                vendor = new Vendor(rs.getInt("id"),rs.getString("name"),rs.getString("phone"));
+            }
+
+        } catch (SQLException e) {
+
+            System.out.println(e.toString());
+        } finally {
+            try {
+                rs.close();
+                ps.close();
+                conn.close();
+            } catch (SQLException e) {
+                System.out.println(e.toString());
+            }
+        }
+        return vendor;
+
+    }
     //GatePass Related Code
     public void createGatePassTable() {
         conn = this.connect();
@@ -456,6 +482,48 @@ public class Database {
             callback.OnFailed(e.getMessage());
 
         }
+    }
+
+    public void searchGatePass(String date,String vendorId,DataListCallback<GatePass> callback){
+
+        String sql = "";
+        if(date!=""&& vendorId!="")
+            sql = "SELECT * FROM "+GATE_PASS_TABLE+" WHERE date = '"+date +"' AND vendorId = "+vendorId;
+        else if(date!=""&& vendorId=="")
+            sql = "SELECT * FROM "+GATE_PASS_TABLE+" WHERE date = '"+date+"'";
+        else if(date==""&& vendorId!="")
+            sql = "SELECT * FROM "+GATE_PASS_TABLE+" WHERE vendorId = "+vendorId;
+
+        System.out.println(sql);
+
+        conn = connect();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        ObservableList<GatePass> _list = FXCollections.observableArrayList();
+        try {
+            ps = conn.prepareStatement(sql);
+            rs = ps.executeQuery();
+
+            while (rs.next()) {
+                GatePass gatePass = new GatePass
+                        (rs.getInt("id"), rs.getInt("vendorId"), rs.getString("date"));
+                _list.add(gatePass);
+            }
+
+            callback.OnSuccess(_list);
+        } catch (SQLException e) {
+            callback.OnFailed(e.getMessage());
+            System.out.println(e.toString());
+        } finally {
+            try {
+                rs.close();
+                ps.close();
+                conn.close();
+            } catch (SQLException e) {
+                System.out.println(e.toString());
+            }
+        }
+
     }
 
     ///GatePassItem Related Code

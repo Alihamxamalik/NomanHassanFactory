@@ -9,8 +9,14 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import model.GatePass;
@@ -22,7 +28,6 @@ import utility.DataItemCallback;
 import utility.DataListCallback;
 
 import java.net.URL;
-import java.sql.SQLOutput;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ResourceBundle;
@@ -43,12 +48,12 @@ public class GatePassController implements Initializable {
     DatePicker entryDatePicker;
     @FXML
     ToggleButton priceToggle;
-    ObservableList gatePassItemList;
+    ObservableList<GatePassItem> gatePassItemList;
     @FXML
     TableView<GatePassItem> gatePassItemTable;
     @FXML
     TableColumn<GatePassItem, String>
-            indexColumn, nameColumn, weightColumn, bardanaColumn, netWeightColumn, priceColumn, totalPriceColumn;
+            indexColumn, nameColumn, weightColumn, bardanaColumn, netWeightColumn, priceColumn, totalPriceColumn, actionColumn;
 
     GatePass currentGatePass;
 
@@ -64,6 +69,7 @@ public class GatePassController implements Initializable {
             System.out.println("Not Null");
             setCurrentGatePassView();
         }
+//        createUpdatePopup(null);
     }
 
     void setCurrentGatePassView() {
@@ -73,8 +79,8 @@ public class GatePassController implements Initializable {
             @Override
             public void OnSuccess(ObservableList<Vendor> list) {
 
-                for (int vendorIndex=0;vendorIndex<list.size();vendorIndex++) {
-                    if(list.get(vendorIndex).getId()==currentGatePass.getVendorId()){
+                for (int vendorIndex = 0; vendorIndex < list.size(); vendorIndex++) {
+                    if (list.get(vendorIndex).getId() == currentGatePass.getVendorId()) {
                         vendorChoice.getSelectionModel().select(vendorIndex);
                     }
                 }
@@ -94,11 +100,12 @@ public class GatePassController implements Initializable {
         GatePassDAO.getInstance().getGatePassItemListById(currentGatePass.getId(), new DataListCallback<GatePassItem>() {
             @Override
             public void OnSuccess(ObservableList<GatePassItem> list) {
-                for (GatePassItem item:list) {
+                for (GatePassItem item : list) {
                     gatePassItemList.add(item);
                 }
                 gatePassItemTable.refresh();
             }
+
             @Override
             public void OnFailed(String msg) {
                 UtilityClass.getInstance().showErrorPopup(msg, new ActionCallback() {
@@ -141,7 +148,7 @@ public class GatePassController implements Initializable {
         String bardanaText = bardanaEditText.getText();
         double bardana = StringToDouble(bardanaText);
 
-        if (bardana < 0) {
+        if (bardana < 0 || bardana>=weight) {
             UtilityClass.getInstance().showAlert("Wrong Bardana Input");
             return;
         }
@@ -297,10 +304,26 @@ public class GatePassController implements Initializable {
 
     void AddItem() {
         int itemIndex = itemChoice.getSelectionModel().getSelectedIndex();
-        int vendorIndex = vendorChoice.getSelectionModel().getSelectedIndex();
         double weightValue = Double.parseDouble(weightEditText.getText());
-        double bardanaValue = Double.parseDouble(bardanaEditText.getText());
-        double priceValue = Double.parseDouble(priceEditText.getText());
+        double bardanaValue = 0;
+        try {
+            bardanaValue = Double.parseDouble(bardanaEditText.getText());
+        }catch (Exception e) {
+            bardanaValue = 0;
+        }
+        double priceValue = 0;
+        try {
+            priceValue = Double.parseDouble(priceEditText.getText());
+        }catch (Exception e){
+            priceValue = 0;
+        }
+        for (GatePassItem i: gatePassItemList) {
+            if(ItemDAO.instance.getByListIndex(itemIndex).getId()==i.getItemId())
+            {
+                UtilityClass.getInstance().showAlert("Item Already Added");
+                return;
+            }
+        }
 
         GatePassItem item = new GatePassItem(
                 ItemDAO.instance.getByListIndex(itemIndex).getId(),
@@ -370,6 +393,7 @@ public class GatePassController implements Initializable {
             }
         });
 
+        actionColumn.setCellFactory(actionButton());
         gatePassItemTable.setItems(gatePassItemList);
 
     }
@@ -437,4 +461,170 @@ public class GatePassController implements Initializable {
         });
     }
 
+
+    public Callback<TableColumn<GatePassItem, String>, TableCell<GatePassItem, String>> actionButton() {
+        Callback<TableColumn<GatePassItem, String>, TableCell<GatePassItem, String>> cellFactory
+                = //
+                new Callback<TableColumn<GatePassItem, String>, TableCell<GatePassItem, String>>() {
+                    @Override
+                    public TableCell call(final TableColumn<GatePassItem, String> param) {
+                        final TableCell<GatePassItem, String> cell = new TableCell<GatePassItem, String>() {
+
+                            final Button btn = new Button("Update");
+
+                            @Override
+                            public void updateItem(String item, boolean empty) {
+                                super.updateItem(item, empty);
+                                if (empty) {
+                                    setGraphic(null);
+                                    setText(null);
+                                } else {
+                                    btn.setOnAction(event -> {
+                                        createUpdatePopup(getTableView().getItems().get(getIndex()));
+                                    });
+                                    setGraphic(btn);
+                                    setText(null);
+                                }
+                            }
+                        };
+                        return cell;
+                    }
+                };
+        return cellFactory;
+    }
+
+    void createUpdatePopup(GatePassItem item) {
+// set title for the stage
+        Stage popupwindow = new Stage();
+
+        popupwindow.initModality(Modality.APPLICATION_MODAL);
+        popupwindow.setTitle("Update Item");
+
+
+
+
+
+//        TextField _txtItemName = createTextField(ItemDAO.getInstance().getById(item.getItemId()).getName());
+        Label lblItemName = createLabel(ItemDAO.getInstance().getById(item.getItemId()).getName());
+//        Label lblItemName = createLabel(ItemDAO.getInstance().getById(1).getName());
+        lblItemName.setFont(Font.font(30));
+
+
+        Label lblWeight = createLabel("Weight");
+        TextField _txtWeight = createTextField(item.getWeight()+"");
+//        TextField _txtWeight = createTextField(500 + "");
+        HBox hBoxWeight = createHbox(lblWeight, _txtWeight);
+
+
+//
+        Label lblBardana = new Label("Bardana");
+        TextField _txtBardana = createTextField(item.getBardana()+"");
+//        TextField _txtBardana = createTextField("100");
+        HBox hBoxBardana = createHbox(lblBardana, _txtBardana);
+
+
+        Label lblPrice = new Label("Price");
+        TextField _txtPrice = createTextField(item.getPrice()+"");
+//        TextField _txtPrice = createTextField(150 + "");
+        HBox hBoxPrice = createHbox(lblPrice, _txtPrice);
+
+
+        Label lblIsIn1KG = new Label("Price In 37.324");
+        CheckBox checkBox = new CheckBox();
+        checkBox.setSelected(!item.isIn1KG());
+//        checkBox.setSelected(true);
+        HBox hBoxisInMound = createHbox(lblIsIn1KG, checkBox);
+
+
+        Button updateButton = new Button("Update");
+
+        updateButton.setOnAction(e -> {
+            String weightText = _txtWeight.getText();
+            double weight = StringToDouble(weightText);
+            if (weight <= 0) {
+                UtilityClass.getInstance().showAlert("Wrong Weight Input");
+                return;
+            }
+
+            String bardanaText = _txtBardana.getText();
+            double bardana = StringToDouble(bardanaText);
+
+            if (bardana < 0 || bardana>=weight) {
+                UtilityClass.getInstance().showAlert("Wrong Bardana Input");
+                return;
+            }
+
+            String priceText = _txtPrice.getText();
+            double price = StringToDouble(priceText);
+
+            if (price <= 0) {
+                UtilityClass.getInstance().showAlert("Wrong Price Input");
+                return;
+            }
+
+
+            for (int i =0;i<gatePassItemList.size();i++){
+
+                System.out.println(gatePassItemList.get(i).getItemId()+" "+item.getItemId());
+                if(gatePassItemList.get(i).getItemId()==item.getItemId()){
+
+                    gatePassItemList.remove(i);
+                    System.out.println(gatePassItemList.size());
+                    GatePassItem _item = new GatePassItem(item.getItemId(),weight,bardana,price,!checkBox.isSelected());
+                    gatePassItemList.add(_item);
+                    System.out.println(gatePassItemList.size());
+
+                }
+
+            }
+
+            popupwindow.close();
+        });
+
+
+        VBox layout = new VBox(10);
+        layout.setAlignment(Pos.CENTER);
+        layout.getChildren().addAll(lblItemName, hBoxWeight, hBoxBardana, hBoxPrice,hBoxisInMound,updateButton);
+        layout.setAlignment(Pos.CENTER);
+
+        Scene scene1 = new Scene(layout, 400, 500);
+        popupwindow.setScene(scene1);
+        popupwindow.showAndWait();
+    }
+
+
+    VBox createVbox(Pos value) {
+        VBox vbox = new VBox(0);
+        vbox.setAlignment(Pos.CENTER_LEFT);
+        vbox.setStyle("-fx-border-style: solid;"
+                + "-fx-border-width: 0;"
+                + "-fx-border-insets: 20px;"
+                + "-fx-border-color: black");
+        return vbox;
+
+    }
+
+    Label createLabel(String txt) {
+        Label lbl = new Label(txt);
+        lbl.setAlignment(Pos.CENTER_LEFT);
+        lbl.minWidth(500);
+        return lbl;
+    }
+
+    TextField createTextField(String s) {
+        TextField txt = new TextField(s);
+        txt.setAlignment(Pos.CENTER_LEFT);
+        return txt;
+    }
+
+    HBox createHbox(Control c1, Control c2) {
+        HBox hbox2 = new HBox();
+        hbox2.setAlignment(Pos.CENTER);
+        VBox vbox21 = createVbox(Pos.TOP_LEFT);
+        VBox vbox22 = createVbox(Pos.TOP_CENTER);
+        vbox22.getChildren().add(c1);
+        vbox21.getChildren().add(c2);
+        hbox2.getChildren().addAll(vbox22, vbox21);
+        return hbox2;
+    }
 }

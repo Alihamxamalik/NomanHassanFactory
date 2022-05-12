@@ -40,6 +40,23 @@ public class GatePassDAO {
         return Database.getInstance().getGatePassById(id);
     }
 
+    public void searchGatePass(String date, String vendorId, DataListCallback<GatePass> callback) {
+
+        Database.getInstance().searchGatePass(date, vendorId, new DataListCallback<GatePass>() {
+            @Override
+            public void OnSuccess(ObservableList<GatePass> list) {
+                callback.OnSuccess(list);
+            }
+
+            @Override
+            public void OnFailed(String msg) {
+                callback.OnFailed(msg);
+            }
+        });
+
+    }
+
+
     public void setCurrentGatePass(long id) {
         currentGatePass = getById(id);
     }

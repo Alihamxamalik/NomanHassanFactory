@@ -22,7 +22,8 @@ public class UtilityClass {
     }
 
     public void showAlert(String s) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION, s, ButtonType.OK);
+        Alert alert = new Alert(Alert.AlertType.NONE, s, ButtonType.OK);
+        alert.setTitle("Alert");
         alert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
         alert.show();
 
