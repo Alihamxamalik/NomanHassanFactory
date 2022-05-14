@@ -1,6 +1,9 @@
 package controller;
 
+import dao.GatePassDAO;
 import dao.VendorDAO;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -10,6 +13,8 @@ import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import javafx.util.Callback;
+import model.GatePass;
+import model.GatePassItem;
 import model.Vendor;
 import utility.DataItemCallback;
 import utility.DataListCallback;
@@ -22,7 +27,9 @@ public class VendorController implements Initializable {
     @FXML
     Button btnClose;
     @FXML
-    ListView vendorListView;
+    TableView<Vendor> vendorTable;
+    @FXML
+    TableColumn<Vendor,String> colId,colPhone,colName,colAction;
     @FXML
     Button btnAdd;
     @FXML
@@ -33,29 +40,51 @@ public class VendorController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         instance = VendorDAO.getInstance();
-        showAllVendor();
+        initVendorTable();
+        //showAllVendor();
     }
 
-    void showAllVendor() {
+    void initVendorTable(){
 
         instance.getAll(new DataListCallback<Vendor>() {
             @Override
             public void OnSuccess(ObservableList<Vendor> list) {
-                vendorListView.setItems(list);
-
-                vendorListView.setCellFactory(new Callback<ListView<Vendor>, ListCell<Vendor>>() {
+                if(list==null|| list.size()<1)
+                    return;
+                colId.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Vendor, String>, ObservableValue<String>>() {
                     @Override
-                    public ListCell<Vendor> call(ListView<Vendor> param) {
+                    public ObservableValue<String> call(TableColumn.CellDataFeatures<Vendor, String> param) {
+                        return new SimpleStringProperty(param.getValue().getId()+"");
+                    }
+                });
+                colName.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Vendor, String>, ObservableValue<String>>() {
+                    @Override
+                    public ObservableValue<String> call(TableColumn.CellDataFeatures<Vendor, String> param) {
+                        return new SimpleStringProperty(param.getValue().getName());
+                    }
+                });
+                colPhone.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Vendor, String>, ObservableValue<String>>() {
+                    @Override
+                    public ObservableValue<String> call(TableColumn.CellDataFeatures<Vendor, String> param) {
+                        return new SimpleStringProperty(param.getValue().getPhone());
+                    }
+                });
 
-                        ListCell<Vendor> cell = new ListCell<Vendor>() {
+                Callback<TableColumn<Vendor, String>, TableCell<Vendor, String>> cellFactory = new Callback<TableColumn<Vendor, String>, TableCell<Vendor, String>>() {
+                    @Override
+                    public TableCell<Vendor, String> call(TableColumn<Vendor, String> param) {
+                        final TableCell<Vendor, String> cell = new TableCell<Vendor, String>() {
+
+                            final Button btn = new Button("Update");
+
                             @Override
-                            protected void updateItem(Vendor vendor, boolean empty) {
-                                super.updateItem(vendor, empty);
-
+                            public void updateItem(String item, boolean empty) {
+                                super.updateItem(item, empty);
                                 if (!empty) {
+                                    Vendor vendor = getTableView().getItems().get(getIndex());
                                     HBox box = new HBox(20);
-                                    Label lblName = new Label(""+vendor.getId()+" : \t"+vendor.getName()+"\t : "+vendor.getPhone());
-                                    Button btn = new Button("x");
+//                                    Label lblName = new Label(""+vendor.getId()+" : \t"+vendor.getName()+"\t : "+vendor.getPhone());
+                                    Button btn = new Button("Delete");
                                     Button btnShowStock = new Button("Show Detail");
                                     btn.setOnAction(new EventHandler<ActionEvent>() {
                                         @Override
@@ -63,7 +92,7 @@ public class VendorController implements Initializable {
                                             confirmDelete(vendor);
                                         }
                                     });
-                                    box.getChildren().addAll(btn,lblName );
+                                    box.getChildren().addAll(btn);
                                     setGraphic(box);
                                     //setText(value);
                                 } else
@@ -72,7 +101,10 @@ public class VendorController implements Initializable {
                         };
                         return cell;
                     }
-                });
+                };
+
+                colAction.setCellFactory(cellFactory);
+                vendorTable.setItems(list);
             }
 
             @Override
@@ -80,6 +112,8 @@ public class VendorController implements Initializable {
 
             }
         });
+
+
 
     }
 
@@ -98,16 +132,31 @@ public class VendorController implements Initializable {
         Optional<ButtonType> result = alert.showAndWait();
         if (result.get() == ButtonType.OK){
             // ... user chose OK
-            instance.delete(vendor, new DataItemCallback<Vendor>() {
+            GatePassDAO.getInstance().searchGatePass("", vendor.getId()+"", new DataListCallback<GatePass>() {
                 @Override
-                public void OnSuccess(Vendor _vendor) {
+                public void OnSuccess(ObservableList<GatePass> list) {
+                    if(list==null || list.size()<1){
+                        instance.delete(vendor, new DataItemCallback<Vendor>() {
+                            @Override
+                            public void OnSuccess(Vendor _vendor) {
+                                initVendorTable();
+                                UtilityClass.getInstance().showAlert("Delete Successfully");
+                            }
 
-                    UtilityClass.getInstance().showAlert("Delete Successfully");
+                            @Override
+                            public void OnFailed(String msg) {
+                                UtilityClass.getInstance().showErrorPopup("Delete Failed",null);
+                            }
+                        });
+
+                    }else{
+                        UtilityClass.getInstance().showAlert("Cant delete this vendor");
+                    }
                 }
 
                 @Override
                 public void OnFailed(String msg) {
-                    UtilityClass.getInstance().showErrorPopup("Delete Failed",null);
+                        UtilityClass.getInstance().showErrorPopup(msg,null);
                 }
             });
         } else {
@@ -125,8 +174,8 @@ public class VendorController implements Initializable {
                 instance.insert(vendor, new DataItemCallback<Vendor>() {
                     @Override
                     public void OnSuccess(Vendor _vendor) {
-                        showAllVendor();
-                        vendorListView.refresh();
+                        initVendorTable();
+//                        vendorListView.refresh();
                         txtVendor.clear();
                         txtPhone.clear();
                     }

@@ -38,12 +38,13 @@ public class UtilityClass {
 
         Optional<ButtonType> result = alert.showAndWait();
         if (result.get() == ButtonType.OK) {
-            callback.OnAction();
+            if (callback != null)
+                callback.OnAction();
         }
     }
 
 
-    void confirmDelete(String title,String body,ActionCallback callback) {
+    void confirmDelete(String title, String body, ActionCallback callback) {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle(title);
         alert.setHeaderText(body);
@@ -51,7 +52,8 @@ public class UtilityClass {
         Optional<ButtonType> result = alert.showAndWait();
         if (result.get() == ButtonType.OK) {
             // ... user chose OK
-callback.OnAction();
+            if (callback != null)
+                callback.OnAction();
         } else {
             // ... user chose CANCEL or closed the dialog
         }

@@ -12,10 +12,17 @@
         </font>
     </Label>
    <Button fx:id="btnClose" layoutX="1148.0" layoutY="5.0" mnemonicParsing="false" onMouseClicked="#closeWindow" prefHeight="34.0" prefWidth="48.0" text="X" />
-   <ListView fx:id="vendorListView" layoutX="4.0" layoutY="153.0" prefHeight="542.0" prefWidth="1192.0" />
    <Label layoutX="19.0" layoutY="79.0" prefHeight="4.0" prefWidth="118.0" text="Vendor Name" />
    <TextField fx:id="txtVendor" layoutX="19.0" layoutY="102.0" prefHeight="23.0" prefWidth="153.0" />
     <Label layoutX="190.0" layoutY="79.0" prefHeight="4.0" prefWidth="118.0" text="Phone Number" />
     <TextField fx:id="txtPhone" layoutX="190.0" layoutY="102.0" prefHeight="23.0" prefWidth="153.0" />
    <Button fx:id="btnAdd" layoutX="406.0" layoutY="102.0" mnemonicParsing="false" onMouseClicked="#insertVendor" prefHeight="25.0" prefWidth="87.0" text="Add" />
+   <TableView fx:id="vendorTable" layoutX="4.0" layoutY="147.0" prefHeight="548.0" prefWidth="1192.0">
+     <columns>
+       <TableColumn fx:id="colId" prefWidth="75.0" text="ID" />
+       <TableColumn fx:id="colName" prefWidth="234.0" text="Name" />
+         <TableColumn fx:id="colPhone" minWidth="0.0" prefWidth="276.0" text="Phone" />
+         <TableColumn fx:id="colAction" minWidth="0.0" prefWidth="149.0" text="Action" />
+     </columns>
+   </TableView>
 </Pane>

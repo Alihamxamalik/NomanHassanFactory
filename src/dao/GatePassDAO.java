@@ -56,7 +56,6 @@ public class GatePassDAO {
 
     }
 
-
     public void setCurrentGatePass(long id) {
         currentGatePass = getById(id);
     }
