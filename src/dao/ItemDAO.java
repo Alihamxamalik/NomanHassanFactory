@@ -114,7 +114,6 @@ public class ItemDAO {
             });
 
     }
-
     public long getLastId() {
 
         return list.get(list.size() - 1).getId();

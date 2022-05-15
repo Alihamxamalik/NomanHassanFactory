@@ -35,9 +35,9 @@ public class MenuController implements Initializable {
             System.out.println("Not Connected");
     }
     @FXML
-    void OpenProductMenu(){
+    void OpenProductionMenu(){
         try {
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("../layout/product_layout.fxml"));
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("../layout/add_product_layout.fxml"));
             Parent root1 = (Parent) fxmlLoader.load();
             Stage stage = new Stage();
             stage.initModality(Modality.APPLICATION_MODAL);

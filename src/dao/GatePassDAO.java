@@ -56,6 +56,20 @@ public class GatePassDAO {
 
     }
 
+    public void getItemListByItemId(long id, DataListCallback<GatePassItem> callback) {
+        Database.getInstance().getGatePassItemListByItemId(id, new DataListCallback<GatePassItem>() {
+            @Override
+            public void OnSuccess(ObservableList<GatePassItem> list) {
+                callback.OnSuccess(list);
+            }
+
+            @Override
+            public void OnFailed(String msg) {
+                callback.OnFailed(msg);
+            }
+        });
+    }
+
     public void setCurrentGatePass(long id) {
         currentGatePass = getById(id);
     }

@@ -1,7 +1,7 @@
 package model;
 
 public class Production {
-    private long id,workerId,itemId;
+    private long id,itemId;
     private String date;
     private double weight;
 
@@ -10,14 +10,7 @@ public class Production {
      this.weight = weight;
      this.date = date;
     }
-    public Production (long id,long itemId,double weight,String date,long workerId){
-        this.itemId =itemId;
-        this.weight = weight;
-        this.date = date;
-        this.id = id;
-        this.workerId = workerId;
-    }
-    public Production (long id, long itemId, double weight, String date){
+    public Production (long id,long itemId,double weight,String date){
         this.itemId =itemId;
         this.weight = weight;
         this.date = date;
@@ -27,8 +20,8 @@ public class Production {
         return id;
     }
 
-    public long getWorkerId() {
-        return workerId;
+    public void setId(long id) {
+        this.id = id;
     }
 
     public long getItemId() {
