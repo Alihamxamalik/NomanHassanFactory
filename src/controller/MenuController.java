@@ -1,6 +1,7 @@
 package controller;
 
 import dao.GatePassDAO;
+import dao.ProductionDAO;
 import database.Database;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -37,6 +38,7 @@ public class MenuController implements Initializable {
     @FXML
     void OpenProductionMenu(){
         try {
+            ProductionDAO.getInstance().currentProduction = null;
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("../layout/add_product_layout.fxml"));
             Parent root1 = (Parent) fxmlLoader.load();
             Stage stage = new Stage();
@@ -112,9 +114,9 @@ public class MenuController implements Initializable {
         }
     }
     @FXML
-    void OpenRecipeMenu(){
+    void OpenProductionDetails(){
         try {
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("../layout/recipe_layout.fxml"));
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("../layout/production_details_view.fxml"));
             Parent root1 = (Parent) fxmlLoader.load();
             Stage stage = new Stage();
             stage.initModality(Modality.APPLICATION_MODAL);

@@ -14,10 +14,10 @@ import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import model.GatePass;
-import model.GatePassItem;
 import model.Vendor;
 import utility.DataItemCallback;
 import utility.DataListCallback;
+import utility.UtilityClass;
 
 import java.net.URL;
 import java.util.Optional;

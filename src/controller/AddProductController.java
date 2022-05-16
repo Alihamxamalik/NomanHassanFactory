@@ -1,7 +1,9 @@
 package controller;
 
 import dao.ItemDAO;
+import dao.ProductionDAO;
 import dao.StockDAO;
+import database.Database;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -12,12 +14,13 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 import javafx.util.Callback;
-import model.GatePassItem;
 import model.Item;
+import model.Production;
 import model.ProductionItem;
 import utility.ActionCallback;
 import utility.DataItemCallback;
 import utility.DataListCallback;
+import utility.UtilityClass;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -37,14 +40,19 @@ public class AddProductController implements Initializable {
     ObservableList<ProductionItem> productionItemList;
     ObservableList<Item> assembleItemList, itemList;
 
-
+    Production currentProduction;
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         productionItemList = FXCollections.observableArrayList();
         iniItemTable();
         initProductionChoiceBox();
         initItemChoiceBox();
+        currentProduction = ProductionDAO.getInstance().currentProduction;
+        if(currentProduction!=null){
 
+
+
+        }
     }
 
 
@@ -127,10 +135,10 @@ public class AddProductController implements Initializable {
 
     public void addItem() {
         int itemIndex = itemChoice.getSelectionModel().getSelectedIndex();
-        long itemId = ItemDAO.instance.getByListIndex(itemIndex).getId();
+        long itemId = itemList.get(itemIndex).getId();
         String weightText = txtWeight.getText();
 
-        for (ProductionItem pi:productionItemList) {
+        for (ProductionItem pi : productionItemList) {
             if (pi.getItemId() == itemId) {
                 UtilityClass.getInstance().showAlert("Item Already Added");
                 return;
@@ -148,7 +156,6 @@ public class AddProductController implements Initializable {
         }
 
 
-
         double finalWeight = weight;
 
         StockDAO.getInstance().getStockItemWeight(itemId, new DataItemCallback<Double>() {
@@ -162,11 +169,11 @@ public class AddProductController implements Initializable {
                 }
 
                 double totalWeight = 0;
-                for (ProductionItem i:productionItemList) {
-                    totalWeight = totalWeight+i.getWeight();
+                for (ProductionItem i : productionItemList) {
+                    totalWeight = totalWeight + i.getWeight();
                 }
 
-                txtTotalWeight.setText(totalWeight+"");
+                txtTotalWeight.setText(totalWeight + "");
 //                itemChoice.getSelectionModel().clearSelection();
                 txtWeight.clear();
                 txtWeight.setPromptText("0");
@@ -179,7 +186,7 @@ public class AddProductController implements Initializable {
         });
     }
 
-    public void deleteItem(){
+    public void deleteItem() {
 
         if (productionItemTable.getSelectionModel().getSelectedItem() != null) {
             productionItemTable.getItems().remove(productionItemTable.getSelectionModel().getSelectedItem());
@@ -195,7 +202,7 @@ public class AddProductController implements Initializable {
         StockDAO.getInstance().getStockItemWeight(itemId, new DataItemCallback<Double>() {
             @Override
             public void OnSuccess(Double _weight) {
-                System.out.println(itemId+" "+_weight);
+                System.out.println(itemId + " " + _weight);
 
                 if (_weight > 0)
                     txtWeight.setPromptText(_weight + "");
@@ -234,8 +241,8 @@ public class AddProductController implements Initializable {
         productionItemTable.setItems(productionItemList);
     }
 
-
-    private void saveProduction(){
+    @FXML
+    private void saveProduction() {
         if (finalProductChoice.getSelectionModel().isEmpty()) {
             UtilityClass.getInstance().showAlert("Please Select Final Product");
             return;
@@ -244,22 +251,51 @@ public class AddProductController implements Initializable {
             UtilityClass.getInstance().showAlert("Please set date first");
             return;
         }
-        if(productionItemList.size()<1)
-        {
+        if (productionItemList.size() < 1) {
             UtilityClass.getInstance().showAlert("Please add at least one item in this list");
             return;
         }
-        String weightText = txtTotalWeight.getText();
+        String weightText = txtTotalProduction.getText();
         double weight = 0;
         try {
             weight = Double.parseDouble(weightText);
-        }catch (Exception e){
+        } catch (Exception e) {
             weight = 0;
         }
+        System.out.println("weight"+ weight);
         if (weight <= 0) {
             UtilityClass.getInstance().showAlert("Wrong Weight Input");
             return;
         }
+        int itemIndex = finalProductChoice.getSelectionModel().getSelectedIndex();
+
+        long itemId = assembleItemList.get(itemIndex).getId();
+        String date = datePicker.getValue().toString();
+        Production production = new Production(itemId, weight, date);
+        ProductionDAO.getInstance().insertProduction(production, new DataItemCallback<Production>() {
+            @Override
+            public void OnSuccess(Production production) {
+
+                ProductionDAO.getInstance().insertProductionItem(productionItemList, production.getId(), new ActionCallback() {
+                    @Override
+                    public void OnAction() {
+                        UtilityClass.getInstance().showAlert("Production Saved Successfully");
+                    }
+
+                    @Override
+                    public void OnCancel() {
+                        UtilityClass.getInstance().showErrorPopup("Something went wrong", null);
+                    }
+                });
+
+            }
+
+            @Override
+            public void OnFailed(String msg) {
+                UtilityClass.getInstance().showErrorPopup(msg, null);
+            }
+        });
     }
+
 
 }

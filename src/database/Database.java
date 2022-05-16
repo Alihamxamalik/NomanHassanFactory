@@ -3,6 +3,7 @@ package database;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import model.*;
+import utility.ActionCallback;
 import utility.Callback;
 import utility.DataItemCallback;
 import utility.DataListCallback;
@@ -38,6 +39,7 @@ public class Database {
         createGatePassTable();
         createGatePassItemTable();
         createProductionTable();
+        createProductionItemTable();
     }
 
     public Connection conn;
@@ -552,7 +554,6 @@ public class Database {
             System.out.println("ERROR " + e.getMessage());
         }
     }
-
     public void insertGatePassItem(GatePassItem gatePassItem, DataItemCallback callback) {
         String sql = "INSERT INTO " + GATE_PASS_ITEM_TABLE + "(gatePassId,itemId,weight,bardana,price,isIn1KG) VALUES(?,?,?,?,?,?)";
         conn = this.connect();
@@ -580,7 +581,6 @@ public class Database {
 
         }
     }
-
     public void deleteGatePassItems(long gatePassId) {
         String sql = "DELETE FROM " + GATE_PASS_ITEM_TABLE + " WHERE gatePassId = ?";
         conn = this.connect();
@@ -594,7 +594,6 @@ public class Database {
             System.out.println(e.getMessage());
         }
     }
-
     public void getGatePassItemList(long gatePassId, DataListCallback<GatePassItem> callback) {
         conn = connect();
         PreparedStatement ps = null;
@@ -632,7 +631,6 @@ public class Database {
 
 
     }
-
     public void getGatePassItemListByItemId(long itemId, DataListCallback<GatePassItem> callback) {
         conn = connect();
         PreparedStatement ps = null;
@@ -670,7 +668,6 @@ public class Database {
 
 
     }
-
     //Production
     public void createProductionTable() {
         conn = this.connect();
@@ -690,9 +687,8 @@ public class Database {
             System.out.println("ERROR " + e.getMessage());
         }
     }
-
     public void insertProduction(Production production, DataItemCallback<Production> callback) {
-        String sql = "INSERT INTO " + GATE_PASS_TABLE + "(itemId,date,weight) VALUES(?,?,?)";
+        String sql = "INSERT INTO " + PRODUCTION_TABLE + "(itemId,date,weight) VALUES(?,?,?)";
         conn = this.connect();
         try {
             PreparedStatement pstmt = conn.prepareStatement(sql);
@@ -716,7 +712,108 @@ public class Database {
 
         }
     }
+    public void getAllProduction(DataListCallback<Production> callback) {
+        conn = connect();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        ObservableList<Production> _list = FXCollections.observableArrayList();
+        try {
+            String sql = "SELECT * FROM " + PRODUCTION_TABLE;
+            ps = conn.prepareStatement(sql);
+            rs = ps.executeQuery();
 
+            while (rs.next()) {
+                Production production = new Production
+                        (rs.getLong("id"), rs.getLong("itemId"),rs.getDouble("weight") ,rs.getString("date"));
+                _list.add(production);
+            }
+
+            callback.OnSuccess(_list);
+        } catch (SQLException e) {
+            callback.OnFailed(e.getMessage());
+            System.out.println(e.toString());
+        } finally {
+            try {
+                rs.close();
+                ps.close();
+                conn.close();
+            } catch (SQLException e) {
+                System.out.println(e.toString());
+            }
+        }
+
+
+    }
+    public void searchProduction(String date, String itemId, DataListCallback<Production> callback) {
+
+        String sql = "";
+        if (date != "" && itemId != "")
+            sql = "SELECT * FROM " + PRODUCTION_TABLE + " WHERE date = '" + date + "' AND itemId = " + itemId;
+        else if (date != "" && itemId == "")
+            sql = "SELECT * FROM " + PRODUCTION_TABLE + " WHERE date = '" + date + "'";
+        else if (date == "" && itemId != "")
+            sql = "SELECT * FROM " + PRODUCTION_TABLE + " WHERE itemId = " + itemId;
+
+        System.out.println(sql);
+
+        conn = connect();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        ObservableList<Production> _list = FXCollections.observableArrayList();
+        try {
+            ps = conn.prepareStatement(sql);
+            rs = ps.executeQuery();
+
+            while (rs.next()) {
+                Production production = new Production
+                        (rs.getLong("id"), rs.getLong("itemId"),rs.getDouble("weight") ,rs.getString("date"));
+                _list.add(production);
+            }
+
+            callback.OnSuccess(_list);
+        } catch (SQLException e) {
+            callback.OnFailed(e.getMessage());
+            System.out.println(e.toString());
+        } finally {
+            try {
+                rs.close();
+                ps.close();
+                conn.close();
+            } catch (SQLException e) {
+                System.out.println(e.toString());
+            }
+        }
+
+    }
+    public Production getProductionById(long id) {
+        conn = connect();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        Production production = null;
+        try {
+            String sql = "SELECT * FROM " + PRODUCTION_TABLE + " WHERE id = " + id;
+            ps = conn.prepareStatement(sql);
+            rs = ps.executeQuery();
+
+            while (rs.next()) {
+                production = new Production
+                        (rs.getLong("id"), rs.getLong("itemId"),rs.getDouble("weight") ,rs.getString("date"));
+            }
+
+        } catch (SQLException e) {
+
+            System.out.println(e.toString());
+        } finally {
+            try {
+                rs.close();
+                ps.close();
+                conn.close();
+            } catch (SQLException e) {
+                System.out.println(e.toString());
+            }
+        }
+        return production;
+    }
     //Production Item
     public void createProductionItemTable() {
         conn = this.connect();
@@ -737,30 +834,70 @@ public class Database {
             System.out.println("ERROR " + e.getMessage());
         }
     }
-    public void insertProductionItem(ProductionItem productionItem, DataItemCallback callback) {
-        String sql = "INSERT INTO " + GATE_PASS_ITEM_TABLE + "(productionId,itemId,weight) VALUES(?,?,?)";
-        conn = this.connect();
-        try {
-            PreparedStatement pstmt = conn.prepareStatement(sql);
-            pstmt.setLong(1, productionItem.getProductionId());
-            pstmt.setLong(2, productionItem.getItemId());
-            pstmt.setDouble(3, productionItem.getWeight());
-            pstmt.executeUpdate();
-            ResultSet rs = pstmt.getGeneratedKeys();
-            int generatedKey = 0;
-            if (rs.next()) {
-                generatedKey = rs.getInt(1);
-                productionItem.setId(generatedKey);
-            }
-            conn.close();
-            //get next key
-            callback.OnSuccess(productionItem);
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-            callback.OnFailed(e.getMessage());
+    public void insertProductionItem(ObservableList<ProductionItem> productionItems, long productionId,ActionCallback callback) {
+        String sql = "INSERT INTO " + PRODUCTION_ITEM_TABLE + "(productionId,itemId,weight) VALUES(?,?,?)";
 
+        for (ProductionItem item : productionItems) {
+            conn = this.connect();
+
+            try {
+                PreparedStatement pstmt = conn.prepareStatement(sql);
+                pstmt.setLong(1, productionId);
+                pstmt.setLong(2, item.getItemId());
+                pstmt.setDouble(3, item.getWeight());
+                pstmt.executeUpdate();
+//                ResultSet rs = pstmt.getGeneratedKeys();
+//                int generatedKey = 0;
+//                if (rs.next()) {
+//                    generatedKey = rs.getInt(1);
+//                    productionItem.setId(generatedKey);
+//                }
+                conn.close();
+                //get next key
+            } catch (SQLException e) {
+                System.out.println(e.getMessage());
+                callback.OnCancel();
+
+            }
         }
+        callback.OnAction();
     }
+    public void getProductionItemList(long productionId, DataListCallback<ProductionItem> callback) {
+        conn = connect();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        ObservableList<ProductionItem> _list = FXCollections.observableArrayList();
+        try {
+            String sql = "SELECT * FROM " + PRODUCTION_ITEM_TABLE + " WHERE productionId = " + productionId;
+            ps = conn.prepareStatement(sql);
+            rs = ps.executeQuery();
+
+            while (rs.next()) {
+                ProductionItem pi = new ProductionItem(
+                        rs.getLong("id"),
+                        rs.getLong("itemId"),
+                        rs.getLong("productionId"),
+                        rs.getDouble("weight"));
+                _list.add(pi);
+            }
+
+            callback.OnSuccess(_list);
+        } catch (SQLException e) {
+            callback.OnFailed(e.getMessage());
+            System.out.println(e.toString());
+        } finally {
+            try {
+                rs.close();
+                ps.close();
+                conn.close();
+            } catch (SQLException e) {
+                System.out.println(e.toString());
+            }
+        }
+
+
+    }
+
 }
 
 

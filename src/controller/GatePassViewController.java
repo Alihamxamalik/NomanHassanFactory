@@ -1,9 +1,7 @@
 package controller;
 
 import dao.GatePassDAO;
-import dao.ItemDAO;
 import dao.VendorDAO;
-import database.Database;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
@@ -18,10 +16,10 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Callback;
 import model.GatePass;
-import model.GatePassItem;
 import model.Vendor;
 import utility.ActionCallback;
 import utility.DataListCallback;
+import utility.UtilityClass;
 
 import java.io.IOException;
 import java.net.URL;

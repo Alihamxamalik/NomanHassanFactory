@@ -15,13 +15,12 @@ import javafx.stage.Stage;
 import javafx.util.Callback;
 import model.GatePassItem;
 import model.Item;
-import model.Vendor;
 import utility.ActionCallback;
 import utility.DataItemCallback;
 import utility.DataListCallback;
+import utility.UtilityClass;
 
 import java.net.URL;
-import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class ItemController implements Initializable {

@@ -1,12 +1,8 @@
-package controller;
+package utility;
 
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.layout.Region;
-import model.Item;
-import model.Vendor;
-import utility.ActionCallback;
-import utility.Callback;
 
 import java.util.Optional;
 
@@ -44,7 +40,7 @@ public class UtilityClass {
     }
 
 
-    void confirmDelete(String title, String body, ActionCallback callback) {
+    public void confirmDelete(String title, String body, ActionCallback callback) {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle(title);
         alert.setHeaderText(body);
