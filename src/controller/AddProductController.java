@@ -23,6 +23,8 @@ import utility.DataListCallback;
 import utility.UtilityClass;
 
 import java.net.URL;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ResourceBundle;
 
 public class AddProductController implements Initializable {
@@ -41,20 +43,56 @@ public class AddProductController implements Initializable {
     ObservableList<Item> assembleItemList, itemList;
 
     Production currentProduction;
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        currentProduction = ProductionDAO.getInstance().currentProduction;
         productionItemList = FXCollections.observableArrayList();
         iniItemTable();
         initProductionChoiceBox();
         initItemChoiceBox();
-        currentProduction = ProductionDAO.getInstance().currentProduction;
-        if(currentProduction!=null){
+        if (currentProduction != null) {
+            setDate();
+            setTableItems();
+        }
+    }
 
 
+    public void setDate() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate localDate = LocalDate.parse(currentProduction.getDate(), formatter);
+        datePicker.setValue(localDate);
+    }
+
+    public void setCurrentProductionAssemble() {
+        if (currentProduction != null) {
+            int itemIndex = assembleItemList.indexOf(ItemDAO.getInstance().getById(currentProduction.getItemId()));
+            finalProductChoice.getSelectionModel().select(itemIndex);
+//            System.out.println(itemIndex);
 
         }
     }
 
+    public void setTableItems() {
+        ProductionDAO.getInstance().getProductionItemsListById(currentProduction.getId(), new DataListCallback<ProductionItem>() {
+            @Override
+            public void OnSuccess(ObservableList<ProductionItem> list) {
+                productionItemList = list;
+                productionItemTable.setItems(productionItemList);
+                double weight = 0;
+                for (ProductionItem pi : list) {
+                    weight = weight+ pi.getWeight();
+                }
+                txtTotalWeight.setText(weight+"");
+                txtTotalProduction.setText(currentProduction.getWeight()+"");
+            }
+
+            @Override
+            public void OnFailed(String msg) {
+
+            }
+        });
+    }
 
     void initProductionChoiceBox() {
 
@@ -71,6 +109,7 @@ public class AddProductController implements Initializable {
                 for (Item i : assembleItemList) {
                     finalProductChoice.getItems().add(i.getId() + " : " + i.getName());
                 }
+                setCurrentProductionAssemble();
             }
 
             @Override
@@ -262,7 +301,7 @@ public class AddProductController implements Initializable {
         } catch (Exception e) {
             weight = 0;
         }
-        System.out.println("weight"+ weight);
+        System.out.println("weight" + weight);
         if (weight <= 0) {
             UtilityClass.getInstance().showAlert("Wrong Weight Input");
             return;
@@ -271,30 +310,56 @@ public class AddProductController implements Initializable {
 
         long itemId = assembleItemList.get(itemIndex).getId();
         String date = datePicker.getValue().toString();
-        Production production = new Production(itemId, weight, date);
-        ProductionDAO.getInstance().insertProduction(production, new DataItemCallback<Production>() {
-            @Override
-            public void OnSuccess(Production production) {
 
-                ProductionDAO.getInstance().insertProductionItem(productionItemList, production.getId(), new ActionCallback() {
-                    @Override
-                    public void OnAction() {
-                        UtilityClass.getInstance().showAlert("Production Saved Successfully");
-                    }
+        if(currentProduction==null) {
+            System.out.println(itemId);
+            Production production = new Production(itemId, weight, date);
+            ProductionDAO.getInstance().insertProduction(production, new DataItemCallback<Production>() {
+                @Override
+                public void OnSuccess(Production production) {
 
-                    @Override
-                    public void OnCancel() {
-                        UtilityClass.getInstance().showErrorPopup("Something went wrong", null);
-                    }
-                });
+                    ProductionDAO.getInstance().insertProductionItem(productionItemList, production.getId(), new ActionCallback() {
+                        @Override
+                        public void OnAction() {
+                            System.out.println(production.getItemId());
 
-            }
+                            UtilityClass.getInstance().showAlert("Production Saved Successfully");
+                            closeWindow();
+                        }
 
-            @Override
-            public void OnFailed(String msg) {
-                UtilityClass.getInstance().showErrorPopup(msg, null);
-            }
-        });
+                        @Override
+                        public void OnCancel() {
+                            UtilityClass.getInstance().showErrorPopup("Something went wrong", null);
+                        }
+                    });
+
+                }
+
+                @Override
+                public void OnFailed(String msg) {
+                    UtilityClass.getInstance().showErrorPopup(msg, null);
+                }
+            });
+        }else
+        {
+            System.out.println(itemId);
+            Production production = new Production(currentProduction.getId(),itemId, weight, date);
+            ProductionDAO.getInstance().updateProduction(production, productionItemList, new DataItemCallback<Production>() {
+                @Override
+                public void OnSuccess(Production production) {
+                    ProductionDAO.getInstance().setCurrentProductionNull();
+                    System.out.println(production.getItemId());
+                    UtilityClass.getInstance().showAlert("Production Update Successfully");
+                    closeWindow();
+                }
+
+                @Override
+                public void OnFailed(String msg) {
+                    UtilityClass.getInstance().showErrorPopup(msg, null);
+                }
+            });
+
+        }
     }
 
 

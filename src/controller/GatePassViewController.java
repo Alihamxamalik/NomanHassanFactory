@@ -168,7 +168,17 @@ public class GatePassViewController implements Initializable {
 
     void showDetail(long gatePassId) {
 
-        GatePassDAO.getInstance().setCurrentGatePass(gatePassId);
+        GatePassDAO.getInstance().setCurrentGatePass(gatePassId, new ActionCallback() {
+            @Override
+            public void OnAction() {
+                initGatePass();
+            }
+
+            @Override
+            public void OnCancel() {
+
+            }
+        });
         OpenGatePassScreen();
     }
 
@@ -234,7 +244,6 @@ public class GatePassViewController implements Initializable {
                 UtilityClass.getInstance().showErrorPopup(msg, new ActionCallback() {
                     @Override
                     public void OnAction() {
-
                     }
 
                     @Override

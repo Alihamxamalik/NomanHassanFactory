@@ -28,14 +28,38 @@ public class ProductionDAO {
             instance = new ProductionDAO();
         return instance;
     }
-    public void setCurrentProduction(long id) {
+    ActionCallback onCloseWindows =null;
+    public void setCurrentProduction(long id,ActionCallback callback) {
         currentProduction = getById(id);
+        onCloseWindows= callback;
+    }
+    public void setCurrentProductionNull(){
+        currentProduction = null;
+        if(onCloseWindows!=null)
+            onCloseWindows.OnAction();
     }
     public void insertProduction(Production production, DataItemCallback<Production> callback){
         Database.getInstance().insertProduction(production,callback);
     }
     public void insertProductionItem(ObservableList<ProductionItem> items,long productionId, ActionCallback callback){
         Database.getInstance().insertProductionItem(items,productionId,callback);
+    }
+    public void updateProduction(Production production,ObservableList<ProductionItem> productionItemObservableList,DataItemCallback<Production> callback){
+        deleteProductionItem(production.getId());
+        insertProductionItem(productionItemObservableList, production.getId(), new ActionCallback() {
+            @Override
+            public void OnAction() {
+                Database.getInstance().updateProduction(production,callback);
+
+            }
+
+            @Override
+            public void OnCancel() {
+            }
+        });
+    }
+    public void deleteProductionItem(long productionId){
+        Database.getInstance().deleteProductionItems(productionId);
     }
     public void getAllProduction(DataListCallback<Production> callback){
         Database.getInstance().getAllProduction(callback);

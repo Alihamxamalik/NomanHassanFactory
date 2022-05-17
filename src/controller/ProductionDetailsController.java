@@ -9,6 +9,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -18,10 +19,12 @@ import javafx.scene.control.*;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import javafx.stage.WindowEvent;
 import javafx.util.Callback;
 import model.GatePass;
 import model.Item;
 import model.Production;
+import utility.ActionCallback;
 import utility.DataListCallback;
 
 import java.io.IOException;
@@ -190,7 +193,19 @@ public class ProductionDetailsController implements Initializable {
 
     }
     void showDetail(long productionId) {
-        ProductionDAO.getInstance().setCurrentProduction(productionId);
+        ProductionDAO.getInstance().setCurrentProduction(productionId, new ActionCallback() {
+            @Override
+            public void OnAction() {
+                System.out.println("On Closes");
+                initProduction();
+                initItemChoice();
+            }
+
+            @Override
+            public void OnCancel() {
+
+            }
+        });
         OpenProductionMenu();
     }
     void OpenProductionMenu(){
@@ -203,6 +218,7 @@ public class ProductionDetailsController implements Initializable {
             stage.setTitle("Product");
             stage.setScene(new Scene(root1));
             stage.show();
+
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -1,6 +1,6 @@
 package model;
 
-public class GatePassItem {
+public class SalesItem {
     public long getId() {
         return id;
     }
@@ -36,20 +36,18 @@ public class GatePassItem {
     public boolean isIn1KG() {
         return isIn1KG;
     }
-    public GatePassItem(long gatePassId, long itemId, double weight, double bardana, double price, boolean isIn1KG) {
-        this.netWeight = weight - bardana;
+
+    public SalesItem
+            (long salesId, long itemId, double weight, double bardana, double price, boolean isIn1KG) {
+        this.salesId = salesId;
         this.itemId = itemId;
         this.weight = weight;
         this.bardana = bardana;
         this.price = price;
         this.isIn1KG = isIn1KG;
-        if (isIn1KG)
-            totalPrice = price * weight;
-        else
-            totalPrice = (price / 37.324) * weight;
-        this.gatePassId = gatePassId;
     }
-    public GatePassItem(long itemId, double weight, double bardana, double price, boolean isIn1KG) {
+
+    public SalesItem(long itemId, double weight, double bardana, double price, boolean isIn1KG) {
         this.netWeight = weight-bardana;
         this.itemId = itemId;
         this.weight = weight;
@@ -65,15 +63,15 @@ public class GatePassItem {
 
     private long id;
 
-    public long getGatePassId() {
-        return gatePassId;
+    public long getSalesId() {
+        return salesId;
     }
 
-    public void setGatePassId(long gatePassId) {
-        this.gatePassId = gatePassId;
+    public void setSalesId(long salesId) {
+        this.salesId = salesId;
     }
 
-    private long gatePassId;
+    private long salesId;
     private long itemId;
 
     public long getItemId() {

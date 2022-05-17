@@ -7,6 +7,7 @@ import javafx.collections.ObservableList;
 import model.GatePass;
 import model.GatePassItem;
 import model.Item;
+import utility.ActionCallback;
 import utility.Callback;
 import utility.DataItemCallback;
 import utility.DataListCallback;
@@ -69,14 +70,16 @@ public class GatePassDAO {
             }
         });
     }
-
-    public void setCurrentGatePass(long id) {
+    ActionCallback onWindowCloses;
+    public void setCurrentGatePass(long id,ActionCallback callback) {
         currentGatePass = getById(id);
+        onWindowCloses = callback;
     }
 
     public void setCurrentGatePassNull() {
-
         currentGatePass = null;
+        if(onWindowCloses!=null)
+            onWindowCloses.OnAction();
     }
 
     public GatePass getByListIndex(int index) {
@@ -142,22 +145,11 @@ public class GatePassDAO {
 
     }
 
-    public void insertGatePassItemList(ObservableList<GatePassItem> list, long gatePassId, Callback callback) {
+    public void insertGatePassItemList(ObservableList<GatePassItem> list, long gatePassId,Callback callback) {
 
         for (GatePassItem item : list) {
             item.setGatePassId(gatePassId);
-            Database.instance.insertGatePassItem(item, new DataItemCallback<GatePassItem>() {
-                @Override
-                public void OnSuccess(GatePassItem gatePassItem) {
-
-                }
-
-                @Override
-                public void OnFailed(String msg) {
-                    Database.getInstance().deleteGatePassItems(item.getGatePassId());
-                    return;
-                }
-            });
+            Database.getInstance().insertGatePassItem(item,callback);
         }
         callback.OnSuccess();
     }

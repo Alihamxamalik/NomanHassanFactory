@@ -1,8 +1,8 @@
 package controller;
 
-import dao.GatePassDAO;
+import dao.CustomerDAO;
 import dao.ItemDAO;
-import dao.VendorDAO;
+import dao.SalesDAO;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -18,10 +18,7 @@ import javafx.scene.text.Font;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Callback;
-import model.GatePass;
-import model.GatePassItem;
-import model.Item;
-import model.Vendor;
+import model.*;
 import utility.ActionCallback;
 import utility.DataItemCallback;
 import utility.DataListCallback;
@@ -32,12 +29,12 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ResourceBundle;
 
-public class GatePassController implements Initializable {
+public class SalesEntryController implements Initializable {
 
     @FXML
     ChoiceBox<String> itemChoice;
     @FXML
-    ChoiceBox<String> vendorChoice;
+    ChoiceBox<String> customerChoice;
     @FXML
     TextField weightEditText;
     @FXML
@@ -48,40 +45,40 @@ public class GatePassController implements Initializable {
     DatePicker entryDatePicker;
     @FXML
     ToggleButton priceToggle;
-    ObservableList<GatePassItem> gatePassItemList;
+    ObservableList<SalesItem> salesItemList;
     @FXML
-    TableView<GatePassItem> gatePassItemTable;
+    TableView<SalesItem> salesItemTable;
     @FXML
-    TableColumn<GatePassItem, String>
+    TableColumn<SalesItem, String>
             indexColumn, nameColumn, weightColumn, bardanaColumn, netWeightColumn, priceColumn, totalPriceColumn, actionColumn;
 
-    GatePass currentGatePass;
+    Sales currentSales;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        initVendorChoiceBox();
+        initCustomerChoiceBox();
         initItemChoiceBox();
-        gatePassItemList = FXCollections.observableArrayList();
-        initGatePassItemTable();
+        salesItemList = FXCollections.observableArrayList();
+        initSalesItemTable();
         onPriceToggle();
-        currentGatePass = GatePassDAO.getInstance().currentGatePass;
-        if (currentGatePass != null) {
+        currentSales = SalesDAO.getInstance().currentSales;
+        if (currentSales != null) {
             System.out.println("Not Null");
-            setCurrentGatePassView();
+            setCurrentSalesView();
         }
 //        createUpdatePopup(null);
     }
 
-    void setCurrentGatePassView() {
+    void setCurrentSalesView() {
 
-        //Set Vendor
-        VendorDAO.getInstance().getAll(new DataListCallback<Vendor>() {
+        //Set Customer
+        CustomerDAO.getInstance().getAll(new DataListCallback<Customer>() {
             @Override
-            public void OnSuccess(ObservableList<Vendor> list) {
+            public void OnSuccess(ObservableList<Customer> list) {
 
-                for (int vendorIndex = 0; vendorIndex < list.size(); vendorIndex++) {
-                    if (list.get(vendorIndex).getId() == currentGatePass.getVendorId()) {
-                        vendorChoice.getSelectionModel().select(vendorIndex);
+                for (int customerIndex = 0; customerIndex < list.size(); customerIndex++) {
+                    if (list.get(customerIndex).getId() == currentSales.getCustomerId()) {
+                        customerChoice.getSelectionModel().select(customerIndex);
                     }
                 }
             }
@@ -93,17 +90,17 @@ public class GatePassController implements Initializable {
         });
         //Set Date
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        LocalDate localDate = LocalDate.parse(currentGatePass.getDate(), formatter);
+        LocalDate localDate = LocalDate.parse(currentSales.getDate(), formatter);
         entryDatePicker.setValue(localDate);
         // Set Items
 
-        GatePassDAO.getInstance().getGatePassItemListById(currentGatePass.getId(), new DataListCallback<GatePassItem>() {
+        SalesDAO.getInstance().getSalesItemListById(currentSales.getId(), new DataListCallback<SalesItem>() {
             @Override
-            public void OnSuccess(ObservableList<GatePassItem> list) {
-                for (GatePassItem item : list) {
-                    gatePassItemList.add(item);
+            public void OnSuccess(ObservableList<SalesItem> list) {
+                for (SalesItem item : list) {
+                    salesItemList.add(item);
                 }
-                gatePassItemTable.refresh();
+                salesItemTable.refresh();
             }
 
             @Override
@@ -128,8 +125,8 @@ public class GatePassController implements Initializable {
     @FXML
     public void AddButton() {
 
-        if (vendorChoice.getSelectionModel().isEmpty()) {
-            UtilityClass.getInstance().showAlert("Please Select Vendor");
+        if (customerChoice.getSelectionModel().isEmpty()) {
+            UtilityClass.getInstance().showAlert("Please Select Customer");
             return;
         }
 
@@ -175,7 +172,7 @@ public class GatePassController implements Initializable {
     }
 
     @FXML
-    public void saveGatePass() {
+    public void saveSales() {
 
         if (entryDatePicker.getValue() == null && entryDatePicker.isEditable()) {
             UtilityClass.getInstance().showAlert("Please set date first");
@@ -184,24 +181,24 @@ public class GatePassController implements Initializable {
             System.out.println(entryDatePicker.getValue().toString());
         }
 
-        if (gatePassItemList.size() < 1) {
+        if (salesItemList.size() < 1) {
             UtilityClass.getInstance().showAlert("Please Add Item First");
             return;
         }
 
-        int vendorIndex = vendorChoice.getSelectionModel().getSelectedIndex();
-        if (currentGatePass == null) {
-            currentGatePass = new GatePass
-                    (VendorDAO.getInstance().getByListIndex(vendorIndex).getId(), entryDatePicker.getValue().toString());
-            GatePassDAO.getInstance().insert(currentGatePass, new DataItemCallback<GatePass>() {
+        int customerIndex = customerChoice.getSelectionModel().getSelectedIndex();
+        if (currentSales == null) {
+            currentSales = new Sales
+                    (CustomerDAO.getInstance().getByListIndex(customerIndex).getId(), entryDatePicker.getValue().toString());
+            SalesDAO.getInstance().insert(currentSales, new DataItemCallback<Sales>() {
                 @Override
-                public void OnSuccess(GatePass gatePass) {
+                public void OnSuccess(Sales sales) {
 
-                    GatePassDAO.getInstance().insertGatePassItemList(gatePassItemList, gatePass.getId(), new utility.Callback() {
+                    SalesDAO.getInstance().insertSalesItemList(salesItemList, sales.getId(), new utility.Callback() {
                         @Override
                         public void OnSuccess() {
                             clearScreen();
-                            UtilityClass.getInstance().showAlert("GatePass Save Successfully");
+                            UtilityClass.getInstance().showAlert("Sales Save Successfully");
                         }
 
                         @Override
@@ -238,17 +235,17 @@ public class GatePassController implements Initializable {
                 }
             });
         } else {
-            currentGatePass = new GatePass
-                    (currentGatePass.getId(),VendorDAO.getInstance().getByListIndex(vendorIndex).getId(), entryDatePicker.getValue().toString());
+            currentSales = new Sales
+                    (currentSales.getId(),CustomerDAO.getInstance().getByListIndex(customerIndex).getId(), entryDatePicker.getValue().toString());
 
-            GatePassDAO.getInstance().update(currentGatePass, gatePassItemList, new DataItemCallback<GatePass>() {
+            SalesDAO.getInstance().update(currentSales, salesItemList, new DataItemCallback<Sales>() {
                 @Override
-                public void OnSuccess(GatePass gatePass) {
-                    System.out.println(gatePass.getVendorId());
+                public void OnSuccess(Sales sales) {
+                    System.out.println(sales.getCustomerId());
                     clearScreen();
-                    GatePassDAO.getInstance().setCurrentGatePassNull();
+                    SalesDAO.getInstance().setCurrentSalesNull();
                     closeWindow();
-                    UtilityClass.getInstance().showAlert("GatePass Update Successfully");
+                    UtilityClass.getInstance().showAlert("Sales Update Successfully");
                 }
 
                 @Override
@@ -273,9 +270,9 @@ public class GatePassController implements Initializable {
 
 
     void clearScreen() {
-        vendorChoice.getSelectionModel().clearSelection();
+        customerChoice.getSelectionModel().clearSelection();
         entryDatePicker.getEditor().clear();
-        gatePassItemList.clear();
+        salesItemList.clear();
         clearItem();
     }
 
@@ -321,7 +318,7 @@ public class GatePassController implements Initializable {
         }catch (Exception e){
             priceValue = 0;
         }
-        for (GatePassItem i: gatePassItemList) {
+        for (SalesItem i: salesItemList) {
             if(ItemDAO.instance.getByListIndex(itemIndex).getId()==i.getItemId())
             {
                 UtilityClass.getInstance().showAlert("Item Already Added");
@@ -329,7 +326,7 @@ public class GatePassController implements Initializable {
             }
         }
 
-        GatePassItem item = new GatePassItem(
+        SalesItem item = new SalesItem(
                 ItemDAO.instance.getByListIndex(itemIndex).getId(),
                 weightValue,
                 bardanaValue,
@@ -337,23 +334,23 @@ public class GatePassController implements Initializable {
                 !priceToggle.isSelected()
         );
 
-        gatePassItemList.add(item);
-        System.out.println(gatePassItemList.size());
+        salesItemList.add(item);
+        System.out.println(salesItemList.size());
         clearItem();
     }
 
 
-    void initGatePassItemTable() {
+    void initSalesItemTable() {
 
-        indexColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<GatePassItem, String>, ObservableValue<String>>() {
+        indexColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<SalesItem, String>, ObservableValue<String>>() {
             @Override
-            public ObservableValue<String> call(TableColumn.CellDataFeatures<GatePassItem, String> param) {
-                return new SimpleStringProperty(gatePassItemList.indexOf(param.getValue()) + 1 + "");
+            public ObservableValue<String> call(TableColumn.CellDataFeatures<SalesItem, String> param) {
+                return new SimpleStringProperty(salesItemList.indexOf(param.getValue()) + 1 + "");
             }
         });
-        nameColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<GatePassItem, String>, ObservableValue<String>>() {
+        nameColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<SalesItem, String>, ObservableValue<String>>() {
             @Override
-            public ObservableValue<String> call(TableColumn.CellDataFeatures<GatePassItem, String> param) {
+            public ObservableValue<String> call(TableColumn.CellDataFeatures<SalesItem, String> param) {
                 System.out.println(param.getValue().getItemId()+"");
                 String s = "";
                 Item item = ItemDAO.getInstance().getById(param.getValue().getItemId());
@@ -364,28 +361,28 @@ public class GatePassController implements Initializable {
 //                return new SimpleStringProperty(param.getValue().getItemId()+"");
             }
         });
-        weightColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<GatePassItem, String>, ObservableValue<String>>() {
+        weightColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<SalesItem, String>, ObservableValue<String>>() {
             @Override
-            public ObservableValue<String> call(TableColumn.CellDataFeatures<GatePassItem, String> param) {
+            public ObservableValue<String> call(TableColumn.CellDataFeatures<SalesItem, String> param) {
                 return new SimpleStringProperty(param.getValue().getWeight() + "");
             }
         });
-        bardanaColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<GatePassItem, String>, ObservableValue<String>>() {
+        bardanaColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<SalesItem, String>, ObservableValue<String>>() {
             @Override
-            public ObservableValue<String> call(TableColumn.CellDataFeatures<GatePassItem, String> param) {
+            public ObservableValue<String> call(TableColumn.CellDataFeatures<SalesItem, String> param) {
                 return new SimpleStringProperty(param.getValue().getBardana() + "");
             }
         });
-        netWeightColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<GatePassItem, String>, ObservableValue<String>>() {
+        netWeightColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<SalesItem, String>, ObservableValue<String>>() {
             @Override
-            public ObservableValue<String> call(TableColumn.CellDataFeatures<GatePassItem, String> param) {
+            public ObservableValue<String> call(TableColumn.CellDataFeatures<SalesItem, String> param) {
                 return new SimpleStringProperty(param.getValue().getNetWeight() + "");
             }
         });
 
-        priceColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<GatePassItem, String>, ObservableValue<String>>() {
+        priceColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<SalesItem, String>, ObservableValue<String>>() {
             @Override
-            public ObservableValue<String> call(TableColumn.CellDataFeatures<GatePassItem, String> param) {
+            public ObservableValue<String> call(TableColumn.CellDataFeatures<SalesItem, String> param) {
 
                 String s = "";
                 if (param.getValue().isIn1KG())
@@ -397,35 +394,36 @@ public class GatePassController implements Initializable {
                 return new SimpleStringProperty(text);
             }
         });
-        totalPriceColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<GatePassItem, String>, ObservableValue<String>>() {
+        totalPriceColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<SalesItem, String>, ObservableValue<String>>() {
             @Override
-            public ObservableValue<String> call(TableColumn.CellDataFeatures<GatePassItem, String> param) {
+            public ObservableValue<String> call(TableColumn.CellDataFeatures<SalesItem, String> param) {
                 return new SimpleStringProperty(Math.round(param.getValue().getTotalPrice()) + "");
             }
         });
 
         actionColumn.setCellFactory(actionButton());
-        gatePassItemTable.setItems(gatePassItemList);
+        salesItemTable.setItems(salesItemList);
 
     }
 
     @FXML
     public void deleteItem() {
-        if (gatePassItemTable.getSelectionModel().getSelectedItem() != null) {
-            gatePassItemTable.getItems().remove(gatePassItemTable.getSelectionModel().getSelectedItem());
+        if (salesItemTable.getSelectionModel().getSelectedItem() != null) {
+            salesItemTable.getItems().remove(salesItemTable.getSelectionModel().getSelectedItem());
         }
     }
 
-    void initVendorChoiceBox() {
+    void initCustomerChoiceBox() {
 
-        vendorChoice.getItems().clear();
+        customerChoice.getItems().clear();
 
-        VendorDAO.getInstance().getAll(new DataListCallback<Vendor>() {
+        CustomerDAO.getInstance().getAll(new DataListCallback<Customer>() {
             @Override
-            public void OnSuccess(ObservableList<Vendor> list) {
-                for (Vendor v : list) {
-                    vendorChoice.getItems().add(v.getId() + " : " + v.getName());
-                }
+            public void OnSuccess(ObservableList<Customer> list) {
+                System.out.println(list.size());
+                for (Customer c : list) {
+                    customerChoice.getItems().add(c.getId() + " : " + c.getName());
+               }
             }
 
             @Override
@@ -445,7 +443,6 @@ public class GatePassController implements Initializable {
         });
 
 
-//        vendorChoice.setItems(VendorDAO.getInstance().GetAll());
 
     }
 
@@ -473,13 +470,13 @@ public class GatePassController implements Initializable {
     }
 
 
-    public Callback<TableColumn<GatePassItem, String>, TableCell<GatePassItem, String>> actionButton() {
-        Callback<TableColumn<GatePassItem, String>, TableCell<GatePassItem, String>> cellFactory
+    public Callback<TableColumn<SalesItem, String>, TableCell<SalesItem, String>> actionButton() {
+        Callback<TableColumn<SalesItem, String>, TableCell<SalesItem, String>> cellFactory
                 = //
-                new Callback<TableColumn<GatePassItem, String>, TableCell<GatePassItem, String>>() {
+                new Callback<TableColumn<SalesItem, String>, TableCell<SalesItem, String>>() {
                     @Override
-                    public TableCell call(final TableColumn<GatePassItem, String> param) {
-                        final TableCell<GatePassItem, String> cell = new TableCell<GatePassItem, String>() {
+                    public TableCell call(final TableColumn<SalesItem, String> param) {
+                        final TableCell<SalesItem, String> cell = new TableCell<SalesItem, String>() {
 
                             final Button btn = new Button("Update");
 
@@ -504,7 +501,7 @@ public class GatePassController implements Initializable {
         return cellFactory;
     }
 
-    void createUpdatePopup(GatePassItem item) {
+    void createUpdatePopup(SalesItem item) {
 // set title for the stage
         Stage popupwindow = new Stage();
 
@@ -574,16 +571,16 @@ public class GatePassController implements Initializable {
             }
 
 
-            for (int i =0;i<gatePassItemList.size();i++){
+            for (int i =0;i<salesItemList.size();i++){
 
-                System.out.println(gatePassItemList.get(i).getItemId()+" "+item.getItemId());
-                if(gatePassItemList.get(i).getItemId()==item.getItemId()){
+                System.out.println(salesItemList.get(i).getItemId()+" "+item.getItemId());
+                if(salesItemList.get(i).getItemId()==item.getItemId()){
 
-                    gatePassItemList.remove(i);
-                    System.out.println(gatePassItemList.size());
-                    GatePassItem _item = new GatePassItem(item.getItemId(),weight,bardana,price,!checkBox.isSelected());
-                    gatePassItemList.add(_item);
-                    System.out.println(gatePassItemList.size());
+                    salesItemList.remove(i);
+                    System.out.println(salesItemList.size());
+                    SalesItem _item = new SalesItem(item.getItemId(),weight,bardana,price,!checkBox.isSelected());
+                    salesItemList.add(_item);
+                    System.out.println(salesItemList.size());
 
                 }
 

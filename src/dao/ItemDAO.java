@@ -37,9 +37,11 @@ public class ItemDAO {
 
     public Item getById(long id) {
 
-        for (Item r : list) {
-            if (r.getId() == id) {
-                return r;
+        if(list.size()>0) {
+            for (Item r : list) {
+                if (r.getId() == id) {
+                    return r;
+                }
             }
         }
         return Database.getInstance().getItemById(id);

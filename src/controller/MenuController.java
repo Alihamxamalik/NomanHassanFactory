@@ -83,6 +83,35 @@ public class MenuController implements Initializable {
         }
     }
     @FXML
+    void OpenCustomerMenu(){
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("../layout/customer_layout.fxml"));
+            Parent root1 = (Parent) fxmlLoader.load();
+            Stage stage = new Stage();
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.initStyle(StageStyle.UNDECORATED);
+            stage.setTitle("Parties");
+            stage.setScene(new Scene(root1));
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }@FXML
+    void OpenSalesMenu(){
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("../layout/sales_entry_layout.fxml"));
+            Parent root1 = (Parent) fxmlLoader.load();
+            Stage stage = new Stage();
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.initStyle(StageStyle.UNDECORATED);
+            stage.setTitle("Parties");
+            stage.setScene(new Scene(root1));
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    @FXML
     void OpenGatePassScreen(){
         GatePassDAO.getInstance().setCurrentGatePassNull();
         try {
