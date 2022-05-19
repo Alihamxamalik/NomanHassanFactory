@@ -57,7 +57,7 @@ public class SalesDAO {
         return salesObservableList.get(index);
     }
 
-    public void GetAll(DataListCallback callback) {
+    public void getAll(DataListCallback callback) {
         Database.getInstance().getAllSales(new DataListCallback<Sales>() {
             @Override
             public void OnSuccess(ObservableList<Sales> list) {

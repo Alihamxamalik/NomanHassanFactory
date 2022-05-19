@@ -19,6 +19,7 @@
       <Button layoutX="27.0" layoutY="519.0" mnemonicParsing="false" onAction="#OpenProductionDetails" onMouseClicked="#OpenGatePassScreen" prefHeight="47.0" prefWidth="200.0" text="Production Detail" />
       <Button layoutX="586.0" layoutY="182.0" mnemonicParsing="false" onAction="#OpenCustomerMenu" onMouseClicked="#OpenPartyMenu" prefHeight="40.0" prefWidth="200.0" text="Customer Center" />
       <Button layoutX="301.0" layoutY="277.0" mnemonicParsing="false" onAction="#OpenSalesMenu" onMouseClicked="#OpenGatePassScreen" prefHeight="47.0" prefWidth="200.0" text="Sales" />
+      <Button layoutX="302.0" layoutY="349.0" mnemonicParsing="false" onAction="#OpenSalesView" onMouseClicked="#OpenGatePassScreen" prefHeight="47.0" prefWidth="200.0" text="Sales View" />
 <!--      <Button fx:id="productButton" layoutX="15.0" layoutY="443.0" mnemonicParsing="false" onMouseClicked="#OpenProductMenu" prefHeight="40.0" prefWidth="200.0" text="Product" />-->
 <!--      <Button layoutX="15" layoutY="225.0" mnemonicParsing="false" onMouseClicked="#OpenWorkerMenu" prefHeight="40.0" prefWidth="200.0" text="Worker" />-->
 <!--      <Button layoutX="15" layoutY="300.0" mnemonicParsing="false" onMouseClicked="#OpenRecipeMenu" prefHeight="40.0" prefWidth="200.0" text="Recipe (Mael)" />-->

@@ -11,14 +11,15 @@
             <Font name="System Bold" size="21.0" />
          </font>
       </Label>
-      <Button layoutX="586.0" layoutY="260.0" mnemonicParsing="false" onMouseClicked="#OpenRawMaterialMenu" prefHeight="40.0" prefWidth="200.0" text="Item Center" />
-      <Button layoutX="586.0" layoutY="113.0" mnemonicParsing="false" onMouseClicked="#OpenPartyMenu" prefHeight="40.0" prefWidth="200.0" text="Vendor Center" />
+      <Button layoutX="572.0" layoutY="522.0" mnemonicParsing="false" onMouseClicked="#OpenRawMaterialMenu" prefHeight="40.0" prefWidth="200.0" text="Item Center" />
+      <Button layoutX="572.0" layoutY="377.0" mnemonicParsing="false" onMouseClicked="#OpenPartyMenu" prefHeight="40.0" prefWidth="200.0" text="Vendor Center" />
       <Button layoutX="27.0" layoutY="109.0" mnemonicParsing="false" onMouseClicked="#OpenGatePassScreen" prefHeight="47.0" prefWidth="200.0" text="Gate Pass" />
       <Button layoutX="27.0" layoutY="192.0" mnemonicParsing="false" onAction="#OpenGatePassViewScreen" onMouseClicked="#OpenGatePassScreen" prefHeight="47.0" prefWidth="200.0" text="Gate Pass View" />
-      <Button layoutX="27.0" layoutY="446.0" mnemonicParsing="false" onAction="#OpenProductionMenu" onMouseClicked="#OpenGatePassScreen" prefHeight="47.0" prefWidth="200.0" text="Production" />
-      <Button layoutX="27.0" layoutY="519.0" mnemonicParsing="false" onAction="#OpenProductionDetails" onMouseClicked="#OpenGatePassScreen" prefHeight="47.0" prefWidth="200.0" text="Production Detail" />
-      <Button layoutX="586.0" layoutY="182.0" mnemonicParsing="false" onAction="#OpenCustomerMenu" onMouseClicked="#OpenPartyMenu" prefHeight="40.0" prefWidth="200.0" text="Customer Center" />
-      <Button layoutX="301.0" layoutY="277.0" mnemonicParsing="false" onAction="#OpenSalesMenu" onMouseClicked="#OpenGatePassScreen" prefHeight="47.0" prefWidth="200.0" text="Sales" />
+      <Button layoutX="572.0" layoutY="114.0" mnemonicParsing="false" onAction="#OpenProductionMenu" onMouseClicked="#OpenGatePassScreen" prefHeight="47.0" prefWidth="200.0" text="Production" />
+      <Button layoutX="572.0" layoutY="187.0" mnemonicParsing="false" onAction="#OpenProductionDetails" onMouseClicked="#OpenGatePassScreen" prefHeight="47.0" prefWidth="200.0" text="Production Detail" />
+      <Button layoutX="572.0" layoutY="446.0" mnemonicParsing="false" onAction="#OpenCustomerMenu" onMouseClicked="#OpenPartyMenu" prefHeight="40.0" prefWidth="200.0" text="Customer Center" />
+      <Button layoutX="301.0" layoutY="114.0" mnemonicParsing="false" onAction="#OpenSalesMenu" onMouseClicked="#OpenGatePassScreen" prefHeight="47.0" prefWidth="200.0" text="Sales" />
+      <Button layoutX="302.0" layoutY="186.0" mnemonicParsing="false" onAction="#OpenSalesView" onMouseClicked="#OpenGatePassScreen" prefHeight="47.0" prefWidth="200.0" text="Sales View" />
 <!--      <Button fx:id="productButton" layoutX="15.0" layoutY="443.0" mnemonicParsing="false" onMouseClicked="#OpenProductMenu" prefHeight="40.0" prefWidth="200.0" text="Product" />-->
 <!--      <Button layoutX="15" layoutY="225.0" mnemonicParsing="false" onMouseClicked="#OpenWorkerMenu" prefHeight="40.0" prefWidth="200.0" text="Worker" />-->
 <!--      <Button layoutX="15" layoutY="300.0" mnemonicParsing="false" onMouseClicked="#OpenRecipeMenu" prefHeight="40.0" prefWidth="200.0" text="Recipe (Mael)" />-->
