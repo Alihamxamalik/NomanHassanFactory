@@ -74,7 +74,7 @@ public class AddProductController implements Initializable {
     }
 
     public void setTableItems() {
-        ProductionDAO.getInstance().getProductionItemsListById(currentProduction.getId(), new DataListCallback<ProductionItem>() {
+        ProductionDAO.getInstance().getProductionItemsListByProductionId(currentProduction.getId(), new DataListCallback<ProductionItem>() {
             @Override
             public void OnSuccess(ObservableList<ProductionItem> list) {
                 productionItemList = list;
@@ -95,7 +95,6 @@ public class AddProductController implements Initializable {
     }
 
     void initProductionChoiceBox() {
-
         ItemDAO.getInstance().getAll(new DataListCallback<Item>() {
             @Override
             public void OnSuccess(ObservableList<Item> list) {

@@ -19,7 +19,7 @@
         <columns>
           <TableColumn fx:id="gatePassId" prefWidth="112.0" text="ID" />
           <TableColumn fx:id="itemColumn" minWidth="0.0" prefWidth="113.0" text="Item" />
-            <TableColumn fx:id="dateColumn" prefWidth="308.0" text="Date" />
+            <TableColumn fx:id="dateColumn" prefWidth="308.0" sortType="DESCENDING" text="Date" />
             <TableColumn fx:id="weightColumn" prefWidth="282.0" text="Weight" />
             <TableColumn fx:id="actionColumn" prefWidth="457.0" text="Action" />
         </columns>

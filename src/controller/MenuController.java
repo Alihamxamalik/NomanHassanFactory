@@ -25,8 +25,6 @@ import java.util.ResourceBundle;
 
 public class MenuController implements Initializable {
 
-    @FXML
-    Button productButton;
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         if(Database.getInstance().getConnection()!=null){
@@ -66,7 +64,6 @@ public class MenuController implements Initializable {
             e.printStackTrace();
         }
     }
-
     @FXML
     void OpenPartyMenu(){
         try {
@@ -96,7 +93,24 @@ public class MenuController implements Initializable {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }@FXML
+    }
+    @FXML
+    void OpenStockMenu(){
+        try {
+            System.out.println("Cloci");
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("../layout/stock_layout.fxml"));
+            Parent root1 = (Parent) fxmlLoader.load();
+            Stage stage = new Stage();
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.initStyle(StageStyle.UNDECORATED);
+            stage.setTitle("Parties");
+            stage.setScene(new Scene(root1));
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    @FXML
     void OpenSalesMenu(){
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("../layout/sales_entry_layout.fxml"));

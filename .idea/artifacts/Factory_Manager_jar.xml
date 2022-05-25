@@ -1,0 +1,10 @@
+<component name="ArtifactManager">
+  <artifact type="jar" build-on-make="true" name="Factory Manager:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/Factory_Manager_jar</output-path>
+    <root id="archive" name="Factory Manager.jar">
+      <element id="module-output" name="Factory Manager" />
+      <element id="extracted-dir" path="D:/sqlite-jdbc-3.36.0.3.jar" path-in-jar="/" />
+      <element id="file-copy" path="D:/sqlite-jdbc-3.36.0.3.jar" />
+    </root>
+  </artifact>
+</component>

@@ -53,7 +53,7 @@ public class SalesEntryController implements Initializable {
             indexColumn, nameColumn, weightColumn, bardanaColumn, netWeightColumn, priceColumn, totalPriceColumn, actionColumn;
 
     Sales currentSales;
-
+    boolean isUpdate;
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         initCustomerChoiceBox();
@@ -62,7 +62,9 @@ public class SalesEntryController implements Initializable {
         initSalesItemTable();
         onPriceToggle();
         currentSales = SalesDAO.getInstance().currentSales;
+        isUpdate = false;
         if (currentSales != null) {
+            isUpdate = true;
             System.out.println("Not Null");
             setCurrentSalesView();
         }
@@ -487,6 +489,10 @@ public class SalesEntryController implements Initializable {
                                     setGraphic(null);
                                     setText(null);
                                 } else {
+                                    btn.setDisable(true);
+                                    if(isUpdate){
+                                        btn.setDisable(false);
+                                    }
                                     btn.setOnAction(event -> {
                                         createUpdatePopup(getTableView().getItems().get(getIndex()));
                                     });

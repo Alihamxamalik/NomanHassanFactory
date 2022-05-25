@@ -22,7 +22,7 @@
         <columns>
           <TableColumn fx:id="salesId" prefWidth="112.0" text="ID" />
           <TableColumn fx:id="customerColumn" minWidth="0.0" prefWidth="470.0" text="Customer" />
-            <TableColumn fx:id="dateColumn" prefWidth="341.0" text="Date" />
+            <TableColumn fx:id="dateColumn" prefWidth="341.0" sortType="DESCENDING" text="Date" />
             <TableColumn fx:id="actionColumn" prefWidth="356.0" text="Action" />
         </columns>
       </TableView>

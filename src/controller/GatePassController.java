@@ -57,6 +57,7 @@ public class GatePassController implements Initializable {
 
     GatePass currentGatePass;
 
+    boolean isUpdate;
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         initVendorChoiceBox();
@@ -65,7 +66,9 @@ public class GatePassController implements Initializable {
         initGatePassItemTable();
         onPriceToggle();
         currentGatePass = GatePassDAO.getInstance().currentGatePass;
+        isUpdate = false;
         if (currentGatePass != null) {
+            isUpdate = true;
             System.out.println("Not Null");
             setCurrentGatePassView();
         }
@@ -193,6 +196,7 @@ public class GatePassController implements Initializable {
         if (currentGatePass == null) {
             currentGatePass = new GatePass
                     (VendorDAO.getInstance().getByListIndex(vendorIndex).getId(), entryDatePicker.getValue().toString());
+            System.out.println("Click");
             GatePassDAO.getInstance().insert(currentGatePass, new DataItemCallback<GatePass>() {
                 @Override
                 public void OnSuccess(GatePass gatePass) {
@@ -201,6 +205,7 @@ public class GatePassController implements Initializable {
                         @Override
                         public void OnSuccess() {
                             clearScreen();
+                            closeWindow();
                             UtilityClass.getInstance().showAlert("GatePass Save Successfully");
                         }
 
@@ -237,7 +242,8 @@ public class GatePassController implements Initializable {
                     });
                 }
             });
-        } else {
+        }
+        else {
             currentGatePass = new GatePass
                     (currentGatePass.getId(),VendorDAO.getInstance().getByListIndex(vendorIndex).getId(), entryDatePicker.getValue().toString());
 
@@ -490,6 +496,10 @@ public class GatePassController implements Initializable {
                                     setGraphic(null);
                                     setText(null);
                                 } else {
+                                    btn.setDisable(true);
+                                    if(isUpdate){
+                                        btn.setDisable(false);
+                                    }
                                     btn.setOnAction(event -> {
                                         createUpdatePopup(getTableView().getItems().get(getIndex()));
                                     });

@@ -61,8 +61,12 @@ public class ProductionDAO {
     public void deleteProductionItem(long productionId){
         Database.getInstance().deleteProductionItems(productionId);
     }
+
     public void getAllProduction(DataListCallback<Production> callback){
         Database.getInstance().getAllProduction(callback);
+    }
+    public void getProductionsByItemId(long itemId,DataListCallback<Production> callback){
+        Database.getInstance().getAllProductionByItemId(itemId,callback);
     }
     public void searchProduction(String date,String itemId,DataListCallback<Production> callback){
         Database.getInstance().searchProduction(date,itemId,callback);
@@ -70,8 +74,10 @@ public class ProductionDAO {
     public Production getById(long id) {
         return Database.getInstance().getProductionById(id);
     }
-    public void getProductionItemsListById(long productionId,DataListCallback<ProductionItem> callback){
-        Database.getInstance().getProductionItemList(productionId,callback);
-
+    public void getProductionItemsListById(long itemId,DataListCallback<ProductionItem> callback){
+        Database.getInstance().getProductionItemListByItemId(itemId,callback);
+    }
+    public void getProductionItemsListByProductionId(long itemId,DataListCallback<ProductionItem> callback){
+        Database.getInstance().getProductionItemListByProductionId(itemId,callback);
     }
 }

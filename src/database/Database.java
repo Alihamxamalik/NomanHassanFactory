@@ -364,6 +364,7 @@ public class Database {
         return customer;
 
     }
+
     ///Customer Related Code
     public void createVendorTable() {
         conn = this.connect();
@@ -518,6 +519,7 @@ public class Database {
             System.out.println("ERROR " + e.getMessage());
         }
     }
+
     public void insertGatePass(GatePass gatePass, DataItemCallback<GatePass> callback) {
         String sql = "INSERT INTO " + GATE_PASS_TABLE + "(vendorId,date) VALUES(?,?)";
         conn = this.connect();
@@ -542,6 +544,7 @@ public class Database {
 
         }
     }
+
     public void getAllGatePass(DataListCallback<GatePass> callback) {
         conn = connect();
         PreparedStatement ps = null;
@@ -574,6 +577,7 @@ public class Database {
 
 
     }
+
     public GatePass getGatePassById(long id) {
         conn = connect();
         PreparedStatement ps = null;
@@ -604,6 +608,7 @@ public class Database {
         return gatePass;
 
     }
+
     public void updateGatePass(GatePass gatePass, DataItemCallback<GatePass> callback) {
         System.out.println("Update");
         String sql = "UPDATE " + GATE_PASS_TABLE + " SET vendorId=? , date=? WHERE id=?";
@@ -624,6 +629,7 @@ public class Database {
 
         }
     }
+
     public void searchGatePass(String date, String vendorId, DataListCallback<GatePass> callback) {
 
         String sql = "";
@@ -689,33 +695,33 @@ public class Database {
             System.out.println("ERROR " + e.getMessage());
         }
     }
-    public void insertGatePassItem(GatePassItem gatePassItem, Callback callback) {
-        String sql = "INSERT INTO " + GATE_PASS_ITEM_TABLE+ " (gatePassId,itemId,weight,bardana,price,isIn1KG) VALUES(?,?,?,?,?,?)";
-        conn = this.connect();
-        try {
-            PreparedStatement pstmt = conn.prepareStatement(sql);
-            pstmt.setLong(1, gatePassItem.getGatePassId());
-            pstmt.setLong(2, gatePassItem.getItemId());
-            pstmt.setDouble(3, gatePassItem.getWeight());
-            pstmt.setDouble(4, gatePassItem.getBardana());
-            pstmt.setDouble(5, gatePassItem.getPrice());
-            pstmt.setBoolean(6, gatePassItem.isIn1KG());
-            pstmt.executeUpdate();
-            ResultSet rs = pstmt.getGeneratedKeys();
-            int generatedKey = 0;
-            if (rs.next()) {
-                generatedKey = rs.getInt(1);
-                gatePassItem.setId(generatedKey);
-            }
-            conn.close();
-            //get next key
-            callback.OnSuccess();
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-            callback.OnFailed(e.getMessage());
 
+    public void insertGatePassItem(ObservableList<GatePassItem> list, Callback callback) {
+
+        String sql = "INSERT INTO " + GATE_PASS_ITEM_TABLE + " (gatePassId,itemId,weight,bardana,price,isIn1KG) VALUES(?,?,?,?,?,?)";
+        for (GatePassItem gatePassItem : list) {
+            conn = this.connect();
+            try {
+                PreparedStatement pstmt = conn.prepareStatement(sql);
+                pstmt.setLong(1, gatePassItem.getGatePassId());
+                pstmt.setLong(2, gatePassItem.getItemId());
+                pstmt.setDouble(3, gatePassItem.getWeight());
+                pstmt.setDouble(4, gatePassItem.getBardana());
+                pstmt.setDouble(5, gatePassItem.getPrice());
+                pstmt.setBoolean(6, gatePassItem.isIn1KG());
+                pstmt.executeUpdate();
+                conn.close();
+                //get next key
+            } catch (SQLException e) {
+                System.out.println(e.getMessage());
+                callback.OnFailed(e.getMessage());
+                return;
+            }
         }
+        callback.OnSuccess();
+
     }
+
     public void deleteGatePassItems(long gatePassId) {
         String sql = "DELETE FROM " + GATE_PASS_ITEM_TABLE + " WHERE gatePassId = ?";
         conn = this.connect();
@@ -729,6 +735,7 @@ public class Database {
             System.out.println(e.getMessage());
         }
     }
+
     public void getGatePassItemList(long gatePassId, DataListCallback<GatePassItem> callback) {
         conn = connect();
         PreparedStatement ps = null;
@@ -767,6 +774,7 @@ public class Database {
 
 
     }
+
     public void getGatePassItemListByItemId(long itemId, DataListCallback<GatePassItem> callback) {
         conn = connect();
         PreparedStatement ps = null;
@@ -824,6 +832,7 @@ public class Database {
             System.out.println("ERROR " + e.getMessage());
         }
     }
+
     public void insertSales(Sales sales, DataItemCallback<Sales> callback) {
         String sql = "INSERT INTO " + SALES_TABLE + "(customerId,date) VALUES(?,?)";
         conn = this.connect();
@@ -848,6 +857,7 @@ public class Database {
 
         }
     }
+
     public void getAllSales(DataListCallback<Sales> callback) {
         conn = connect();
         PreparedStatement ps = null;
@@ -880,11 +890,12 @@ public class Database {
 
 
     }
+
     public Sales getSalesById(long id) {
         conn = connect();
         PreparedStatement ps = null;
         ResultSet rs = null;
-        Sales sales= null;
+        Sales sales = null;
         try {
             String sql = "SELECT * FROM " + SALES_TABLE + " WHERE id = " + id;
             ps = conn.prepareStatement(sql);
@@ -910,6 +921,7 @@ public class Database {
         return sales;
 
     }
+
     public void updateSales(Sales sales, DataItemCallback<Sales> callback) {
         System.out.println("Update");
         String sql = "UPDATE " + SALES_TABLE + " SET customerId=? , date=? WHERE id=?";
@@ -930,6 +942,7 @@ public class Database {
 
         }
     }
+
     public void searchSales(String date, String customerId, DataListCallback<Sales> callback) {
 
         String sql = "";
@@ -995,6 +1008,7 @@ public class Database {
             System.out.println("ERROR " + e.getMessage());
         }
     }
+
     public void insertSalesItem(SalesItem salesItem, DataItemCallback<SalesItem> callback) {
         String sql = "INSERT INTO " + SALES_ITEM_TABLE + "(salesId,itemId,weight,bardana,price,isIn1KG) VALUES(?,?,?,?,?,?)";
         conn = this.connect();
@@ -1022,6 +1036,7 @@ public class Database {
 
         }
     }
+
     public void deleteSalesItems(long salesId) {
         String sql = "DELETE FROM " + SALES_ITEM_TABLE + " WHERE salesId = ?";
         conn = this.connect();
@@ -1035,6 +1050,7 @@ public class Database {
             System.out.println(e.getMessage());
         }
     }
+
     public void getSalesItemList(long salesId, DataListCallback<SalesItem> callback) {
         conn = connect();
         PreparedStatement ps = null;
@@ -1073,13 +1089,14 @@ public class Database {
 
 
     }
+
     public void getSalesItemListByItemId(long itemId, DataListCallback<SalesItem> callback) {
         conn = connect();
         PreparedStatement ps = null;
         ResultSet rs = null;
         ObservableList<SalesItem> _list = FXCollections.observableArrayList();
         try {
-            String sql = "SELECT * FROM " + GATE_PASS_ITEM_TABLE + " WHERE itemId = " + itemId;
+            String sql = "SELECT * FROM " + SALES_ITEM_TABLE + " WHERE itemId = " + itemId;
             ps = conn.prepareStatement(sql);
             rs = ps.executeQuery();
 
@@ -1132,6 +1149,7 @@ public class Database {
             System.out.println("ERROR " + e.getMessage());
         }
     }
+
     public void insertProduction(Production production, DataItemCallback<Production> callback) {
         String sql = "INSERT INTO " + PRODUCTION_TABLE + "(itemId,date,weight) VALUES(?,?,?)";
         conn = this.connect();
@@ -1157,6 +1175,7 @@ public class Database {
 
         }
     }
+
     public void updateProduction(Production production, DataItemCallback<Production> callback) {
         String sql = "UPDATE " + PRODUCTION_TABLE + " SET itemId=? , date=? , weight =? WHERE id =?";
         System.out.println(sql);
@@ -1179,6 +1198,7 @@ public class Database {
 
         }
     }
+
     public void getAllProduction(DataListCallback<Production> callback) {
         conn = connect();
         PreparedStatement ps = null;
@@ -1191,7 +1211,7 @@ public class Database {
 
             while (rs.next()) {
                 Production production = new Production
-                        (rs.getLong("id"), rs.getLong("itemId"),rs.getDouble("weight") ,rs.getString("date"));
+                        (rs.getLong("id"), rs.getLong("itemId"), rs.getDouble("weight"), rs.getString("date"));
                 _list.add(production);
             }
 
@@ -1211,6 +1231,40 @@ public class Database {
 
 
     }
+
+    public void getAllProductionByItemId(long itemId, DataListCallback<Production> callback) {
+        conn = connect();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        ObservableList<Production> _list = FXCollections.observableArrayList();
+        try {
+            String sql = "SELECT * FROM " + PRODUCTION_TABLE + " WHERE itemId = " + itemId;
+            ps = conn.prepareStatement(sql);
+            rs = ps.executeQuery();
+
+            while (rs.next()) {
+                Production production = new Production
+                        (rs.getLong("id"), rs.getLong("itemId"), rs.getDouble("weight"), rs.getString("date"));
+                _list.add(production);
+            }
+
+            callback.OnSuccess(_list);
+        } catch (SQLException e) {
+            callback.OnFailed(e.getMessage());
+            System.out.println(e.toString());
+        } finally {
+            try {
+                rs.close();
+                ps.close();
+                conn.close();
+            } catch (SQLException e) {
+                System.out.println(e.toString());
+            }
+        }
+
+
+    }
+
     public void searchProduction(String date, String itemId, DataListCallback<Production> callback) {
 
         String sql = "";
@@ -1233,7 +1287,7 @@ public class Database {
 
             while (rs.next()) {
                 Production production = new Production
-                        (rs.getLong("id"), rs.getLong("itemId"),rs.getDouble("weight") ,rs.getString("date"));
+                        (rs.getLong("id"), rs.getLong("itemId"), rs.getDouble("weight"), rs.getString("date"));
                 _list.add(production);
             }
 
@@ -1252,6 +1306,7 @@ public class Database {
         }
 
     }
+
     public Production getProductionById(long id) {
         conn = connect();
         PreparedStatement ps = null;
@@ -1264,7 +1319,7 @@ public class Database {
 
             while (rs.next()) {
                 production = new Production
-                        (rs.getLong("id"), rs.getLong("itemId"),rs.getDouble("weight") ,rs.getString("date"));
+                        (rs.getLong("id"), rs.getLong("itemId"), rs.getDouble("weight"), rs.getString("date"));
             }
 
         } catch (SQLException e) {
@@ -1281,6 +1336,7 @@ public class Database {
         }
         return production;
     }
+
     //Production Item
     public void createProductionItemTable() {
         conn = this.connect();
@@ -1301,7 +1357,8 @@ public class Database {
             System.out.println("ERROR " + e.getMessage());
         }
     }
-    public void insertProductionItem(ObservableList<ProductionItem> productionItems, long productionId,ActionCallback callback) {
+
+    public void insertProductionItem(ObservableList<ProductionItem> productionItems, long productionId, ActionCallback callback) {
         String sql = "INSERT INTO " + PRODUCTION_ITEM_TABLE + "(productionId,itemId,weight) VALUES(?,?,?)";
 
         for (ProductionItem item : productionItems) {
@@ -1329,7 +1386,43 @@ public class Database {
         }
         callback.OnAction();
     }
-    public void getProductionItemList(long productionId, DataListCallback<ProductionItem> callback) {
+
+    public void getProductionItemListByItemId(long itemId, DataListCallback<ProductionItem> callback) {
+        conn = connect();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        ObservableList<ProductionItem> _list = FXCollections.observableArrayList();
+        try {
+            String sql = "SELECT * FROM " + PRODUCTION_ITEM_TABLE + " WHERE itemId = " + itemId;
+            ps = conn.prepareStatement(sql);
+            rs = ps.executeQuery();
+
+            while (rs.next()) {
+                ProductionItem pi = new ProductionItem(
+                        rs.getLong("id"),
+                        rs.getLong("itemId"),
+                        rs.getLong("productionId"),
+                        rs.getDouble("weight"));
+                _list.add(pi);
+            }
+
+            callback.OnSuccess(_list);
+        } catch (SQLException e) {
+            callback.OnFailed(e.getMessage());
+            System.out.println(e.toString());
+        } finally {
+            try {
+                rs.close();
+                ps.close();
+                conn.close();
+            } catch (SQLException e) {
+                System.out.println(e.toString());
+            }
+        }
+
+
+    }
+    public void getProductionItemListByProductionId(long productionId, DataListCallback<ProductionItem> callback) {
         conn = connect();
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -1364,6 +1457,7 @@ public class Database {
 
 
     }
+
     public void deleteProductionItems(long productionId) {
         String sql = "DELETE FROM " + PRODUCTION_ITEM_TABLE + " WHERE productionId = ?";
         conn = this.connect();

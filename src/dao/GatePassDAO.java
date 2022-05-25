@@ -15,7 +15,7 @@ import utility.DataListCallback;
 import java.util.List;
 
 public class GatePassDAO {
-
+    String TAG = this.getClass().getName();
     private static ObservableList<GatePass> gatePasslist;
 
     public GatePassDAO() {
@@ -102,19 +102,7 @@ public class GatePassDAO {
     }
 
     public void insert(GatePass gatePass, DataItemCallback<GatePass> callback) {
-        Database.getInstance().insertGatePass(gatePass, new DataItemCallback<GatePass>() {
-            @Override
-            public void OnSuccess(GatePass _gatePass) {
-                System.out.println("ID " + _gatePass.getId());
-                gatePasslist.add(_gatePass);
-                callback.OnSuccess(_gatePass);
-            }
-
-            @Override
-            public void OnFailed(String msg) {
-
-            }
-        });
+        Database.getInstance().insertGatePass(gatePass,callback);
     }
 
     public void update(GatePass gatePass, ObservableList<GatePassItem> itemList, DataItemCallback<GatePass> callback) {
@@ -144,14 +132,14 @@ public class GatePassDAO {
 
 
     }
-
+    int count = 0;
     public void insertGatePassItemList(ObservableList<GatePassItem> list, long gatePassId,Callback callback) {
-
+        count =0;
         for (GatePassItem item : list) {
             item.setGatePassId(gatePassId);
-            Database.getInstance().insertGatePassItem(item,callback);
         }
-        callback.OnSuccess();
+        Database.getInstance().insertGatePassItem(list,callback);
+//        callback.OnSuccess();
     }
 
     public void getGatePassItemListById(long gatePassId, DataListCallback<GatePassItem> callback) {
